@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rànquing mundial de països · Futbol</title>
+<style>
+  :root{
+    --ink:#0d1b2a; --ink-soft:#48566a; --paper:#f7f6f2;
+    --line:#e2ded4; --gold:#c8a24a; --gold-soft:#f0e6cc;
+    --band:#ffffff; --band-alt:#fbfaf6;
+    --up:#3a7d5c; --down:#b5533f; --pitch:#12351f; --flag-bg:#eceae2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Georgia","Times New Roman",serif;background:var(--paper);
+    color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  .breadcrumb{background:var(--ink);color:#fff;
+    font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px}
+  .breadcrumb .wrap{display:flex;gap:0;align-items:stretch;padding:0}
+  .breadcrumb a{color:#8fa598;text-decoration:none;padding:12px 15px;
+    text-transform:uppercase;letter-spacing:.09em;font-weight:600;transition:.15s;
+    border-bottom:2px solid transparent;white-space:nowrap}
+  .breadcrumb a:hover{color:#fff}
+  .breadcrumb a.here{color:#fff;border-bottom-color:var(--gold)}
+  .breadcrumb .sep{color:#3a4a5a;display:flex;align-items:center;font-size:9px;padding:0 2px}
+
+  header{background:linear-gradient(180deg,rgba(18,53,31,.94),rgba(13,27,42,.97)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 40px,transparent 40px 80px);
+    color:#fff;padding:38px 0 34px;border-bottom:3px solid var(--gold)}
+  .eyebrow{font-family:"Helvetica Neue",Arial,sans-serif;text-transform:uppercase;
+    letter-spacing:.28em;font-size:11px;font-weight:700;color:var(--gold);margin-bottom:14px}
+  header h1{font-size:clamp(28px,4.4vw,46px);font-weight:400;letter-spacing:-.01em;
+    line-height:1.07;max-width:20ch}
+  header h1 em{font-style:italic;color:var(--gold)}
+  .sub{margin-top:16px;max-width:62ch;color:#c9d2cc;font-size:15.5px}
+
+  /* Selector de confederació */
+  .confbar{background:rgba(247,246,242,.94);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;padding:12px 0}
+  .confbar .wrap{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .chip{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.07em;padding:9px 15px;border:1px solid var(--line);
+    background:#fff;color:var(--ink-soft);border-radius:2px;cursor:pointer;transition:.15s}
+  .chip:hover{border-color:var(--gold)}
+  .chip.on{background:var(--pitch);color:#fff;border-color:var(--pitch)}
+
+  main{padding:22px 0 60px}
+  .tablewrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:600px}
+  thead th{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;
+    text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);font-weight:700;
+    text-align:left;padding:16px 12px 10px;border-bottom:2px solid var(--ink)}
+  thead th.c{text-align:center} thead th.r{text-align:right}
+  tbody tr{border-bottom:1px solid var(--line);background:var(--band);cursor:pointer}
+  tbody tr:nth-child(even){background:var(--band-alt)}
+  tbody tr:hover{background:var(--gold-soft)}
+  td{padding:13px 12px;vertical-align:middle}
+  .rank{font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:17px;
+    width:48px;color:var(--ink);text-align:center}
+  tr[data-rank="1"] .rank,tr[data-rank="2"] .rank,tr[data-rank="3"] .rank{color:var(--gold)}
+  .country{font-size:18px}
+  .country .flag{display:inline-block;width:26px;height:18px;margin-right:10px;
+    background:var(--flag-bg);border-radius:2px;vertical-align:middle;text-align:center;
+    line-height:18px;font-size:13px}
+  .country .arrow{color:var(--ink-soft);font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:13px;margin-left:8px;opacity:0;transition:.15s}
+  tbody tr:hover .arrow{opacity:1}
+  .force{font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:17px;
+    text-align:right;font-variant-numeric:tabular-nums}
+  /* Connexió internacional = barra de confiança universal */
+  .conn{width:130px}
+  .conn-bar{height:7px;background:var(--line);border-radius:4px;overflow:hidden;position:relative}
+  .conn-bar span{position:absolute;left:0;top:0;bottom:0;background:var(--up);border-radius:4px}
+  .conn-lo .conn-bar span{background:var(--gold)}
+  .conn-txt{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;color:var(--ink-soft);
+    margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+  .clubs{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;color:var(--ink-soft);
+    text-align:center}
+
+  .note{font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;color:var(--ink-soft);
+    border-top:1px solid var(--line);padding:20px 0 0;margin-top:20px;max-width:74ch}
+  .note b{color:var(--ink)}
+  footer{background:var(--pitch);color:#c9d2cc;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:13px;padding:30px 0;margin-top:40px}
+  footer strong{color:#fff}
+  @media(max-width:640px){.conn,.clubs{display:none}}
+
+  .langbar{background:var(--ink);color:#fff}
+  .langbar .wrap{display:flex;justify-content:flex-end;align-items:center;gap:2px;padding:0;flex-wrap:wrap}
+  .lang{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em;padding:9px 12px;cursor:pointer;
+    color:#8fa598;background:none;border:none;transition:.15s}
+  .lang:hover{color:#fff}
+  .lang.on{color:var(--pitch);background:var(--gold)}
+</style>
+<script src="paisos.js"></script>
+</head>
+<body>
+
+<div class="langbar"><div class="wrap" id="langbar">
+  <button class="lang" data-lang="ca">CAT</button>
+  <button class="lang" data-lang="es">ESP</button>
+  <button class="lang" data-lang="en">ENG</button>
+  <button class="lang" data-lang="fr">FRA</button>
+  <button class="lang" data-lang="de">DEU</button>
+  <button class="lang" data-lang="it">ITA</button>
+  <button class="lang" data-lang="pt">POR</button>
+</div></div>
+
+<nav class="breadcrumb"><div class="wrap">
+  <a href="#">Món</a>
+  <span class="sep">▸</span>
+  <a href="#" class="here" id="bc-conf">Confederació</a>
+  <span class="sep">▸</span>
+  <a href="#">Lliga</a>
+  <span class="sep">▸</span>
+  <a href="#">Club</a>
+</div></nav>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow" data-ui="p_eyebrow">Força de les federacions · Temporada 2025</div>
+    <h1 data-ui="p_title">Quines <em>lligües</em> són les més fortes del món</h1>
+    <p class="sub" data-ui="p_sub"></p>
+  </div>
+</header>
+
+<div class="confbar"><div class="wrap" id="confbar">
+  <button class="chip on" data-conf="all" data-ui="totelmon">Tot el món</button>
+  <button class="chip" data-conf="UEFA" data-ui="europa">Europa</button>
+  <button class="chip" data-conf="CONMEBOL" data-ui="sudamerica">Sud-amèrica</button>
+  <button class="chip" data-conf="CONCACAF" data-ui="nordamerica">Nord-amèrica</button>
+  <button class="chip" data-conf="AFC" data-ui="asia">Àsia</button>
+  <button class="chip" data-conf="CAF" data-ui="africa">Àfrica</button>
+  <button class="chip" data-conf="OFC" data-ui="oceania">Oceania</button>
+</div></div>
+
+<main>
+  <div class="wrap">
+    <div class="tablewrap">
+    <table>
+      <thead><tr>
+        <th class="c">#</th>
+        <th data-ui="pais">País</th>
+        <th class="r" data-ui="th_force">Força</th>
+        <th class="c" data-ui="th_conn">Connexió internacional</th>
+        <th class="c" data-ui="th_clubs">Clubs</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    </div>
+    <p class="note" data-ui="note_read"></p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span data-ui="footer">Rànquing generat automàticament a partir de resultats esportius · Sense afiliació amb la UEFA ni la FIFA</span>
+</div></footer>
+
+<script>
+// Dades reals del paisos.py (temp. 2025) + confederació + connexió internacional
+// (conn: 0-100, proxy dels partits continentals recents; clubs = nre. clubs al model).
+// Xifres de connexió il·lustratives per al prototip; vindran del motor.
+// Les dades reals vénen del motor (dades.json). Taules de suport per bandera i nom.
+// Banderes i noms de països: paisos.js (font única).
+
+// Nom del país en català (per mostrar). La resta cau a la clau crua; s'ampliarà.
+
+const params=new URLSearchParams(location.search);
+let filterConf=params.get('conf')||'all';
+let lang=params.get('lang')||'ca';
+let DATA=[];
+const rows=document.getElementById('rows');
+
+fetch('dades.json').then(r=>r.json()).then(j=>{
+  DATA=(j.paisos||[]).map(p=>({
+    key:p.country,
+    conf:p.conf,
+    force:p.force,
+    conn:p.conn!=null?p.conn:0,
+    clubs:p.clubs,
+  }));
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.conf===filterConf));
+  applyUI();
+  render();
+}).catch(err=>{
+  rows.innerHTML=`<tr><td colspan="5" style="padding:40px;text-align:center;color:#888">
+    No s'han pogut carregar les dades: ${err}</td></tr>`;
+});
+
+// aplica els textos d'interfície (capçalera, taula, nota, xips) en l'idioma actual
+function applyUI(){
+  const u=UI[lang]||UI.ca;
+  document.querySelectorAll('[data-ui]').forEach(el=>{el.innerHTML=u[el.dataset.ui]||el.innerHTML});
+  document.documentElement.lang=lang;
+  document.querySelectorAll('.lang').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+}
+
+function connLabel(conn){
+  const u=UI[lang]||UI.ca;
+  return conn>=80?u.conn_molt:conn>=60?u.conn_alta:conn>=40?u.conn_mitjana:u.conn_baixa;
+}
+
+function render(){
+  const u=UI[lang]||UI.ca;
+  // rang mundial de cada país (sobre tots), per mostrar-lo com a secundari
+  const mundial=DATA.slice().sort((a,b)=>b.force-a.force);
+  const worldPos={}; mundial.forEach((d,i)=>{worldPos[d.key]=i+1;});
+  const list=DATA.filter(d=>filterConf==='all'||d.conf===filterConf)
+                 .sort((a,b)=>b.force-a.force);
+  const filtrat = filterConf!=='all';
+  rows.innerHTML=list.map((d,i)=>{
+    const lo = d.conn<60 ? 'conn-lo' : '';
+    // rang principal: dins de la confederació si filtrem, si no el mundial.
+    // Si filtrem, mostrem el mundial com a secundari sota el número.
+    const rankCell = filtrat
+      ? `${i+1}<small style="display:block;font-size:9px;color:#a0a8b2;font-weight:600">${worldPos[d.key]}è ${u.mon.toLowerCase()}</small>`
+      : `${i+1}`;
+    return `<tr data-rank="${i+1}" data-key="${d.key}">
+      <td class="rank">${rankCell}</td>
+      <td class="country"><span class="flag">${banderaPais(d.key)}</span>${nomPais(d.key,lang)}<span class="arrow">${u.veureclubs}</span></td>
+      <td class="force">${d.force.toLocaleString('ca')}</td>
+      <td class="conn ${lo}">
+        <div class="conn-bar"><span style="width:${d.conn}%"></span></div>
+        <div class="conn-txt">${connLabel(d.conn)}</div>
+      </td>
+      <td class="clubs">${d.clubs}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('bc-conf').textContent = confName(filterConf, lang);
+  const bcMon=document.getElementById('bc-mon');
+  if(bcMon) bcMon.href='index.html?lang='+lang;
+}
+
+document.getElementById('confbar').addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  b.classList.add('on');filterConf=b.dataset.conf;render();
+});
+// Clic sobre un país → pàgina del país (clau estable + idioma)
+rows.addEventListener('click',e=>{
+  const tr=e.target.closest('tr');if(!tr||!tr.dataset.key)return;
+  location.href='pais.html?c='+encodeURIComponent(tr.dataset.key)+'&lang='+lang;
+});
+// selector d'idioma: canvia lang i reaplica
+document.getElementById('langbar').addEventListener('click',e=>{
+  const b=e.target.closest('.lang');if(!b)return;
+  lang=b.dataset.lang;applyUI();render();
+});
+</script>
+</body>
+</html>

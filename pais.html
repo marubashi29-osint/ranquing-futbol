@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>País · Rànquing de clubs</title>
+<style>
+  :root{
+    --ink:#0d1b2a; --ink-soft:#48566a; --paper:#f7f6f2;
+    --line:#e2ded4; --gold:#c8a24a; --gold-soft:#f0e6cc;
+    --band:#ffffff; --band-alt:#fbfaf6;
+    --up:#3a7d5c; --down:#b5533f; --pitch:#12351f; --flag-bg:#eceae2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Georgia","Times New Roman",serif;background:var(--paper);
+    color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  .breadcrumb{background:var(--ink);color:#fff;
+    font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px}
+  .breadcrumb .wrap{display:flex;gap:0;align-items:stretch;padding:0;flex-wrap:wrap}
+  .breadcrumb a{color:#8fa598;text-decoration:none;padding:12px 15px;
+    text-transform:uppercase;letter-spacing:.09em;font-weight:600;transition:.15s;
+    border-bottom:2px solid transparent;white-space:nowrap;cursor:pointer}
+  .breadcrumb a:hover{color:#fff}
+  .breadcrumb a.here{color:#fff;border-bottom-color:var(--gold)}
+  .breadcrumb .sep{color:#3a4a5a;display:flex;align-items:center;font-size:9px;padding:0 2px}
+
+  header{background:linear-gradient(180deg,rgba(18,53,31,.94),rgba(13,27,42,.97)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 40px,transparent 40px 80px);
+    color:#fff;padding:34px 0 30px;border-bottom:3px solid var(--gold)}
+  .flagbig{font-size:40px;line-height:1;margin-bottom:12px}
+  header h1{font-size:clamp(28px,4.4vw,44px);font-weight:400;letter-spacing:-.01em;line-height:1.05}
+  header h1 em{font-style:italic;color:var(--gold)}
+  .countrystats{margin-top:18px;display:flex;flex-wrap:wrap;gap:26px;
+    font-family:"Helvetica Neue",Arial,sans-serif}
+  .countrystats div{display:flex;flex-direction:column}
+  .countrystats .n{font-size:20px;font-weight:700;color:#fff}
+  .countrystats .l{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#8fa598;margin-top:3px}
+
+  .divbar{background:rgba(247,246,242,.94);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;padding:12px 0}
+  .divbar .wrap{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .divlabel{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);margin-right:6px}
+  .chip{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;font-weight:600;
+    letter-spacing:.04em;padding:9px 14px;border:1px solid var(--line);
+    background:#fff;color:var(--ink-soft);border-radius:2px;cursor:pointer;transition:.15s}
+  .chip:hover{border-color:var(--gold)}
+  .chip.on{background:var(--pitch);color:#fff;border-color:var(--pitch)}
+  .search{margin-left:auto;font-family:"Helvetica Neue",Arial,sans-serif;font-size:14px;
+    padding:9px 13px;border:1px solid var(--line);border-radius:2px;background:#fff;
+    color:var(--ink);min-width:150px}
+  .search:focus{outline:2px solid var(--gold);outline-offset:-1px}
+
+  main{padding:20px 0 60px}
+  table{width:100%;border-collapse:collapse}
+  thead th{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;
+    text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);font-weight:700;
+    text-align:left;padding:14px 12px 9px;border-bottom:2px solid var(--ink)}
+  thead th.c{text-align:center} thead th.r{text-align:right}
+  tbody tr{border-bottom:1px solid var(--line);background:var(--band)}
+  tbody tr:nth-child(even){background:var(--band-alt)}
+  tbody tr:hover{background:var(--gold-soft)}
+  td{padding:12px}
+  .wrank{font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:13px;
+    color:var(--ink-soft);text-align:center;width:70px;font-variant-numeric:tabular-nums}
+  .wrank small{font-size:10px;display:block;text-transform:uppercase;letter-spacing:.06em;
+    color:#a0a8b2;font-weight:600}
+  .club{font-size:18px}
+  .divtag{display:inline-block;font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;
+    font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 7px;border-radius:2px;
+    margin-left:10px;vertical-align:middle;background:var(--gold-soft);color:#8a6d24;
+    cursor:pointer;border:1px solid transparent;transition:.13s;text-decoration:none}
+  .divtag:hover{border-color:currentColor;filter:brightness(1.08)}
+  .divtag.d1{background:#12351f;color:#fff}
+  .divtag.d2{background:#3a7d5c;color:#fff}
+  .divtag.d3{background:#8aa899;color:#fff}
+  .rating{font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:17px;
+    text-align:right;font-variant-numeric:tabular-nums}
+  /* escut provisional del club: pastilla amb inicials ISO del país. Quan
+     hi hagi escuts amb llicència, se substitueix aquest <span> per un <img>. */
+  .crest{display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:50%;margin-right:11px;vertical-align:middle;
+    background:var(--pitch);color:#fff;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:8.5px;font-weight:700;letter-spacing:.02em;flex-shrink:0;
+    border:1.5px solid var(--gold)}
+  .crest.club-link{cursor:pointer;transition:.13s}
+  .crest.club-link:hover{filter:brightness(1.15);border-color:#fff}
+  .club-name{color:var(--ink);text-decoration:none;cursor:pointer;
+    border-bottom:1px dotted transparent;transition:.13s}
+  .club-name:hover{color:var(--pitch);border-bottom-color:var(--pitch)}
+  .club-cell{display:flex;align-items:center}
+  .trend{font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;font-weight:700;
+    text-align:center;width:70px}
+  .trend.up{color:var(--up)} .trend.down{color:var(--down)} .trend.flat{color:var(--ink-soft)}
+  .empty{padding:50px;text-align:center;color:var(--ink-soft);font-style:italic}
+  footer{background:var(--pitch);color:#c9d2cc;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:13px;padding:30px 0;margin-top:40px}
+  footer strong{color:#fff}
+  @media(max-width:640px){.trend,.wrank small{display:none}.club{font-size:16px}}
+
+  .langbar{background:var(--ink);color:#fff}
+  .langbar .wrap{display:flex;justify-content:flex-end;align-items:center;gap:2px;padding:0;flex-wrap:wrap}
+  .lang{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em;padding:9px 12px;cursor:pointer;
+    color:#8fa598;background:none;border:none;transition:.15s}
+  .lang:hover{color:#fff}
+  .lang.on{color:var(--pitch);background:var(--gold)}
+</style>
+<script src="paisos.js"></script>
+</head>
+<body>
+
+<div class="langbar"><div class="wrap" id="langbar">
+  <button class="lang" data-lang="ca">CAT</button>
+  <button class="lang" data-lang="es">ESP</button>
+  <button class="lang" data-lang="en">ENG</button>
+  <button class="lang" data-lang="fr">FRA</button>
+  <button class="lang" data-lang="de">DEU</button>
+  <button class="lang" data-lang="it">ITA</button>
+  <button class="lang" data-lang="pt">POR</button>
+</div></div>
+
+<nav class="breadcrumb"><div class="wrap">
+  <a id="bc-mon" data-ui="mon">Món</a>
+  <span class="sep">▸</span>
+  <a id="bc-conf">Confederació</a>
+  <span class="sep">▸</span>
+  <a class="here" id="bc-pais">País</a>
+</div></nav>
+
+<header>
+  <div class="wrap">
+    <div class="flagbig" id="flag">🏳️</div>
+    <h1>Clubs d'<em id="country-name">…</em></h1>
+    <div class="countrystats">
+      <div><span class="n" id="st-world">—</span><span class="l" data-ui="c_worldrank">Al rànquing mundial</span></div>
+      <div><span class="n" id="st-force">—</span><span class="l" data-ui="c_force">Força del país</span></div>
+      <div><span class="n" id="st-clubs">—</span><span class="l" data-ui="c_clubs">Clubs al model</span></div>
+      <div><span class="n" id="st-divs">—</span><span class="l" data-ui="c_divs">Divisions</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="divbar"><div class="wrap">
+  <span class="divlabel" data-ui="c_division">Divisió</span>
+  <span id="divchips"></span>
+  <input class="search" id="q" data-ui-ph="c_search" placeholder="Cerca un club…">
+</div></div>
+
+<main>
+  <div class="wrap">
+    <table>
+      <thead><tr>
+        <th class="c" data-ui="th_world">Món</th>
+        <th data-ui="th_club">Club</th>
+        <th class="c" data-ui="th_trend">Tendència</th>
+        <th class="r" data-ui="th_rating">Rating</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none" data-ui="loading">Carregant…</div>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span data-ui="footer">Rànquing generat automàticament a partir de resultats esportius · Sense afiliació amb la UEFA ni la FIFA</span>
+</div></footer>
+
+<script>
+// --- paràmetres de l'URL: ?c=England&lang=ca ---
+const params=new URLSearchParams(location.search);
+const countryKey=params.get('c')||'Spain';
+let lang=params.get('lang')||'ca';
+
+// --- noms i banderes de països: vénen de paisos.js (font única) ---
+
+
+// noms de divisió per país. Genèric per defecte; Espanya i altres amb noms reals.
+const DIVNAMES={
+  Spain:{1:"La Liga",2:"Segona",3:"Primera Fed.",4:"Segona Fed.",5:"Tercera Fed."},
+  England:{1:"Premier",2:"Championship",3:"League One",4:"League Two",5:"National",6:"Nat. Nord/Sud"},
+  Germany:{1:"Bundesliga",2:"2. Bundesliga",3:"3. Liga",4:"Regionalliga"},
+  Italy:{1:"Serie A",2:"Serie B",3:"Serie C",4:"Serie D"},
+  France:{1:"Ligue 1",2:"Ligue 2",3:"National",4:"National 2"},
+};
+function divName(country,d){
+  if(DIVNAMES[country]&&DIVNAMES[country][d]) return DIVNAMES[country][d];
+  return d+"a div.";
+}
+function countryDisplay(key){ return nomPais(key, lang); }
+const CONF_NAME={UEFA:"Europa",CONMEBOL:"Sud-amèrica",CONCACAF:"Nord-amèrica",
+  AFC:"Àsia",CAF:"Àfrica",OFC:"Oceania"};
+
+let CLUBS=[], filterDiv='all';
+const rows=document.getElementById('rows'), empty=document.getElementById('empty'), q=document.getElementById('q');
+
+fetch('dades.json').then(r=>r.json()).then(j=>{
+  // clubs d'aquest país
+  CLUBS=j.clubs.filter(c=>c.country===countryKey);
+  // dades del país (força, confederació, posició mundial del país)
+  const pinfo=(j.paisos||[]).find(p=>p.country===countryKey);
+  const worldPos=(j.paisos||[]).sort((a,b)=>b.force-a.force)
+      .findIndex(p=>p.country===countryKey)+1;
+
+  // capçalera
+  document.getElementById('flag').textContent=banderaPais(countryKey);   // ara amb banderes de subdivisió (Escòcia, Gal·les...)
+  document.getElementById('country-name').textContent=countryDisplay(countryKey);
+  document.title=countryDisplay(countryKey)+" · "+ (UI[lang]||UI.ca).c_clubsof.trim();
+  document.getElementById('st-world').textContent=worldPos?ordinal(worldPos,lang):"—";
+  document.getElementById('st-force').textContent=pinfo?pinfo.force.toLocaleString('ca'):"—";
+  document.getElementById('st-clubs').textContent=CLUBS.length;
+
+  // divisions presents
+  const divs=[...new Set(CLUBS.map(c=>c.div).filter(x=>x&&x>0))].sort((a,b)=>a-b);
+  document.getElementById('st-divs').textContent=divs.length;
+  CONF=pinfo?pinfo.conf:(CLUBS[0]&&CLUBS[0].conf);
+  DIVS=divs;
+
+  applyUI();     // aplica els textos d'interfície + fil conductor + chips
+  render();
+}).catch(err=>{
+  empty.style.display='block';
+  empty.textContent="No s'han pogut carregar les dades: "+err;
+});
+
+let CONF=null, DIVS=[];
+
+// Aplica tots els textos d'interfície en l'idioma actual (lang).
+function applyUI(){
+  const u=UI[lang]||UI.ca;
+  document.querySelectorAll('[data-ui]').forEach(el=>{el.innerHTML=u[el.dataset.ui]||el.innerHTML});
+  document.querySelectorAll('[data-ui-ph]').forEach(el=>{el.placeholder=u[el.dataset.uiPh]||el.placeholder});
+  document.documentElement.lang=lang;
+  // capçalera "Clubs d'X" amb la preposició de cada idioma
+  document.getElementById('country-name').textContent=countryDisplay(countryKey);
+  const h1=document.querySelector('header h1');
+  if(h1) h1.innerHTML=u.c_clubsof+'<em id="country-name">'+countryDisplay(countryKey)+'</em>';
+  // fil conductor
+  document.getElementById('bc-mon').href='index.html?lang='+lang;
+  document.getElementById('bc-conf').textContent=confName(CONF,lang);
+  document.getElementById('bc-conf').href='ranquing_paisos.html?conf='+CONF+'&lang='+lang;
+  document.getElementById('bc-pais').textContent=countryDisplay(countryKey);
+  // chips de divisió (amb "Totes" traduït)
+  let chips=`<button class="chip ${filterDiv==='all'?'on':''}" data-div="all">${u.c_totes}</button>`;
+  DIVS.forEach(d=>{chips+=`<button class="chip ${filterDiv==String(d)?'on':''}" data-div="${d}">${divName(countryKey,d)}</button>`});
+  document.getElementById('divchips').innerHTML=chips;
+  // marca el botó d'idioma actiu
+  document.querySelectorAll('.lang').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+}
+
+function divClass(d){return d===1?'d1':d===2?'d2':d===3?'d3':''}
+
+function render(){
+  const term=q.value.trim().toLowerCase();
+  const list=CLUBS.filter(c=>{
+    const okD=filterDiv==='all'||c.div===+filterDiv;
+    const okQ=!term||c.club.toLowerCase().includes(term);
+    return okD&&okQ;
+  }).sort((a,b)=>b.rating-a.rating);
+
+  const u=UI[lang]||UI.ca;
+  // etiqueta del rang contextual: dins del país, o dins de la divisió filtrada
+  const ctxLabel = filterDiv==='all' ? (u.th_pais||u.pais) : divName(countryKey, +filterDiv);
+
+  rows.innerHTML=list.map((c,i)=>{
+    const t=c.trend||0, tc=t>0?'up':t<0?'down':'flat', tx=t>0?'▲'+t:t<0?'▼'+Math.abs(t):'=';
+    const showTag=filterDiv==='all'&&c.div;
+    const tag=showTag?`<a class="divtag ${divClass(c.div)}" data-goto="${c.div}" title="${divName(countryKey,c.div)}">${divName(countryKey,c.div)}</a>`:'';
+    // rang principal = posició dins del context (país o divisió). Món = secundari.
+    return `<tr>
+      <td class="wrank">${ordinal(i+1,lang)}<small>${ordinal(c.world,lang)} ${u.th_world.toLowerCase()}</small></td>
+      <td class="club"><span class="club-cell"><span class="crest club-link" data-club="${c.id}" title="${c.club}">${isoPais(countryKey)}</span><span><a class="club-name club-link" data-club="${c.id}">${c.club}</a>${tag}</span></span></td>
+      <td class="trend ${tc}">${tx}</td>
+      <td class="rating">${c.rating.toLocaleString('ca')}</td>
+    </tr>`;
+  }).join('');
+  // capçalera de la columna de rang: reflecteix el context actual
+  const th=document.querySelector('thead th.c');
+  if(th) th.textContent = filterDiv==='all' ? countryDisplay(countryKey) : divName(countryKey,+filterDiv);
+  empty.style.display=list.length?'none':'block';
+  if(!list.length) empty.textContent=(UI[lang]||UI.ca).nomatch;
+}
+
+// selector d'idioma: canvia lang i reaplica (sense recarregar)
+document.getElementById('langbar').addEventListener('click',e=>{
+  const b=e.target.closest('.lang');if(!b)return;
+  lang=b.dataset.lang;
+  applyUI();render();
+});
+
+document.querySelector('.divbar').addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  b.classList.add('on');filterDiv=b.dataset.div;render();
+});
+document.getElementById('rows').addEventListener('click',e=>{
+  // clic sobre el nom o la pastilla del club → fitxa del club
+  const cl=e.target.closest('.club-link');
+  if(cl){ location.href='club.html?id='+encodeURIComponent(cl.dataset.club)+'&lang='+lang; return; }
+  // clic sobre l'etiqueta de divisió → filtra a aquella divisió
+  const tag=e.target.closest('.divtag');if(!tag)return;
+  const d=tag.dataset.goto;filterDiv=d;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.div===d));
+  render();window.scrollTo({top:0,behavior:'smooth'});
+});
+q.addEventListener('input',render);
+</script>
+</body>
+</html>

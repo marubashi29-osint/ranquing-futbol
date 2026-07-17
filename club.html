@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Club · Rànquing</title>
+<style>
+  :root{
+    --ink:#0d1b2a; --ink-soft:#48566a; --paper:#f7f6f2;
+    --line:#e2ded4; --gold:#c8a24a; --gold-soft:#f0e6cc;
+    --band:#ffffff; --band-alt:#fbfaf6;
+    --up:#3a7d5c; --down:#b5533f; --pitch:#12351f; --flag-bg:#eceae2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Georgia","Times New Roman",serif;background:var(--paper);
+    color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  .langbar{background:var(--ink);color:#fff}
+  .langbar .wrap{display:flex;justify-content:flex-end;align-items:center;gap:2px;padding:0;flex-wrap:wrap}
+  .lang{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em;padding:9px 12px;cursor:pointer;
+    color:#8fa598;background:none;border:none;transition:.15s}
+  .lang:hover{color:#fff}
+  .lang.on{color:var(--pitch);background:var(--gold)}
+
+  .breadcrumb{background:var(--ink);color:#fff;border-top:1px solid #1b2b3d;
+    font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px}
+  .breadcrumb .wrap{display:flex;gap:0;align-items:stretch;padding:0;flex-wrap:wrap}
+  .breadcrumb a{color:#8fa598;text-decoration:none;padding:12px 15px;cursor:pointer;
+    text-transform:uppercase;letter-spacing:.09em;font-weight:600;transition:.15s;
+    border-bottom:2px solid transparent;white-space:nowrap}
+  .breadcrumb a:hover{color:#fff}
+  .breadcrumb a.here{color:#fff;border-bottom-color:var(--gold)}
+  .breadcrumb .sep{color:#3a4a5a;display:flex;align-items:center;font-size:9px;padding:0 2px}
+
+  header{background:linear-gradient(180deg,rgba(18,53,31,.94),rgba(13,27,42,.97)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 40px,transparent 40px 80px);
+    color:#fff;padding:38px 0 34px;border-bottom:3px solid var(--gold)}
+  .club-head{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .crest-big{width:76px;height:76px;border-radius:50%;background:var(--pitch);
+    border:2.5px solid var(--gold);display:flex;align-items:center;justify-content:center;
+    font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:19px;color:#fff;
+    flex-shrink:0}
+  .club-titles h1{font-size:clamp(28px,4.4vw,44px);font-weight:400;letter-spacing:-.01em;line-height:1.05}
+  .club-titles .loc{margin-top:8px;font-family:"Helvetica Neue",Arial,sans-serif;font-size:14px;
+    color:#c9d2cc;text-transform:uppercase;letter-spacing:.08em;cursor:pointer}
+  .club-titles .loc:hover{color:#fff}
+  .club-titles .loc .flag{margin-right:7px}
+
+  .stats{margin-top:26px;display:flex;flex-wrap:wrap;gap:14px}
+  .stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    border-radius:3px;padding:14px 20px;min-width:120px}
+  .stat .n{font-family:"Helvetica Neue",Arial,sans-serif;font-size:26px;font-weight:700;color:#fff;
+    font-variant-numeric:tabular-nums}
+  .stat .n .rank-hash{font-size:16px;color:var(--gold);vertical-align:top}
+  .stat .l{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;text-transform:uppercase;
+    letter-spacing:.12em;color:#8fa598;margin-top:4px}
+  .stat.gold{background:rgba(200,162,74,.14);border-color:rgba(200,162,74,.4)}
+
+  main{padding:34px 0 60px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:26px 26px 20px;
+    margin-bottom:24px}
+  .card h2{font-size:20px;font-weight:400;margin-bottom:4px}
+  .card .cap{font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;color:var(--ink-soft);
+    margin-bottom:20px}
+
+  /* gràfic SVG */
+  .chart{width:100%;height:auto;display:block;overflow:visible;font-family:"Helvetica Neue",Arial,sans-serif}
+  .chart .grid{stroke:var(--line);stroke-width:1}
+  .chart .axis{stroke:var(--ink-soft);stroke-width:1}
+  .chart .area{fill:url(#grad)}
+  .chart .line{fill:none;stroke:var(--pitch);stroke-width:2.5}
+  .chart .dot{fill:var(--pitch);stroke:#fff;stroke-width:2}
+  .chart .dot.hi{fill:var(--gold)}
+  .chart .hit{cursor:pointer}
+  .chart .lbl{font-size:11px;fill:var(--ink-soft)}
+  .chart .val{font-size:11px;fill:var(--ink);font-weight:700}
+  .chart .yr{font-size:11px;fill:var(--ink-soft)}
+
+  /* mini-taula de fets */
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .fact{background:#fff;padding:16px 18px}
+  .fact .l{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;text-transform:uppercase;
+    letter-spacing:.1em;color:var(--ink-soft)}
+  .fact .v{font-family:"Helvetica Neue",Arial,sans-serif;font-size:19px;font-weight:700;margin-top:5px;
+    font-variant-numeric:tabular-nums}
+  .fact .v.up{color:var(--up)} .fact .v.down{color:var(--down)}
+
+  /* forma recent: tira de partits amb rival clicable i moviment de rating */
+  .form-list{display:flex;flex-direction:column;gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .form-row{background:#fff;display:flex;align-items:center;gap:14px;padding:13px 16px;transition:.13s}
+  .form-row:hover{background:var(--band-alt)}
+  .res-badge{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;
+    align-items:center;justify-content:center;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-weight:700;font-size:13px;color:#fff}
+  .res-badge.V{background:var(--up)} .res-badge.E{background:#a9922f} .res-badge.D{background:var(--down)}
+  .form-opp{flex:1;font-size:17px}
+  .form-opp .vs{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;color:var(--ink-soft);
+    text-transform:uppercase;letter-spacing:.08em;margin-right:8px}
+  .form-opp a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--line);cursor:pointer}
+  .form-opp a:hover{color:var(--pitch);border-bottom-color:var(--pitch)}
+  .venue{display:inline-block;width:18px;height:18px;line-height:18px;text-align:center;
+    border-radius:3px;font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;font-weight:700;
+    margin-left:9px;vertical-align:middle}
+  .venue.home{background:var(--gold-soft);color:#8a6d24}
+  .venue.away{background:var(--flag-bg);color:var(--ink-soft)}
+  .form-mov{font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:15px;
+    font-variant-numeric:tabular-nums;width:56px;text-align:right}
+  .form-mov.up{color:var(--up)} .form-mov.down{color:var(--down)} .form-mov.flat{color:var(--ink-soft)}
+  .form-strip{display:flex;gap:5px;margin-bottom:18px}
+  .form-strip span{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;
+    font-size:11px;color:#fff}
+  .form-strip .V{background:var(--up)} .form-strip .E{background:#a9922f} .form-strip .D{background:var(--down)}
+  footer{background:var(--pitch);color:#c9d2cc;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:13px;padding:30px 0;margin-top:40px}
+  footer strong{color:#fff}
+</style>
+<script src="paisos.js"></script>
+</head>
+<body>
+
+<div class="langbar"><div class="wrap" id="langbar">
+  <button class="lang" data-lang="ca">CAT</button>
+  <button class="lang" data-lang="es">ESP</button>
+  <button class="lang" data-lang="en">ENG</button>
+  <button class="lang" data-lang="fr">FRA</button>
+  <button class="lang" data-lang="de">DEU</button>
+  <button class="lang" data-lang="it">ITA</button>
+  <button class="lang" data-lang="pt">POR</button>
+</div></div>
+
+<nav class="breadcrumb"><div class="wrap">
+  <a id="bc-mon">Món</a>
+  <span class="sep">▸</span>
+  <a id="bc-conf">Confederació</a>
+  <span class="sep">▸</span>
+  <a id="bc-pais">País</a>
+  <span class="sep">▸</span>
+  <a class="here" id="bc-club">Club</a>
+</div></nav>
+
+<header>
+  <div class="wrap">
+    <div class="club-head">
+      <div class="crest-big" id="crest">—</div>
+      <div class="club-titles">
+        <h1 id="club-name">…</h1>
+        <div class="loc" id="loc"><span class="flag" id="loc-flag"></span><span id="loc-country"></span></div>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="card" id="chart-card">
+      <h2 id="chart-title">Evolució del rating</h2>
+      <div class="cap" id="chart-cap">Rating de la temporada 2016 fins avui.</div>
+      <div id="chart-holder"></div>
+    </div>
+    <div class="card" id="form-card" style="display:none">
+      <h2 id="form-title">Per què s'ha mogut</h2>
+      <div class="cap" id="form-cap">Els últims partits i quant ha pesat cadascun al rànquing.</div>
+      <div class="form-strip" id="form-strip"></div>
+      <div class="form-list" id="form-list"></div>
+    </div>
+    <div class="facts" id="facts"></div>
+    <div class="empty" id="empty" style="display:none">Carregant…</div>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span id="footer-txt">Rànquing generat automàticament a partir de resultats esportius · Sense afiliació amb la UEFA ni la FIFA</span>
+</div></footer>
+
+<script>
+const params=new URLSearchParams(location.search);
+const clubId=params.get('id');
+let lang=params.get('lang')||'ca';
+
+// textos propis d'aquesta pàgina, en 7 idiomes (breus)
+const CT={
+  ca:{evol:"Evolució del rating",cap:"Rating de la temporada 2016 fins avui.",
+      world:"Rànquing mundial",nat:"Al seu país",rating:"Rating actual",trend:"Tendència (1 any)",
+      best:"Millor rating",bestyr:"Any del màxim",worst:"Rating més baix",div:"Divisió actual",
+      seasons:"Temporades al model",loading:"Carregant…",notfound:"No s'ha trobat aquest club.",formtitle:"Per què s'ha mogut",formcap:"Els últims partits i quant ha pesat cadascun al rànquing.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victòria",draw:"Empat",loss:"Derrota",athome:"A casa",away:"A fora",hbadge:"C",abadge:"F"},
+  es:{evol:"Evolución del rating",cap:"Rating desde la temporada 2016 hasta hoy.",
+      world:"Ranking mundial",nat:"En su país",rating:"Rating actual",trend:"Tendencia (1 año)",
+      best:"Mejor rating",bestyr:"Año del máximo",worst:"Rating más bajo",div:"División actual",
+      seasons:"Temporadas en el modelo",loading:"Cargando…",notfound:"No se ha encontrado este club.",formtitle:"Por qué se ha movido",formcap:"Los últimos partidos y cuánto ha pesado cada uno en el ranking.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victoria",draw:"Empate",loss:"Derrota",athome:"En casa",away:"Fuera",hbadge:"C",abadge:"F"},
+  en:{evol:"Rating evolution",cap:"Rating from the 2016 season to today.",
+      world:"World ranking",nat:"In its country",rating:"Current rating",trend:"Trend (1 year)",
+      best:"Best rating",bestyr:"Peak year",worst:"Lowest rating",div:"Current division",
+      seasons:"Seasons in the model",loading:"Loading…",notfound:"Club not found.",formtitle:"Why it moved",formcap:"The last matches and how much each one weighed in the ranking.",vs:"vs",W:"W",D_:"D",L:"L",win:"Win",draw:"Draw",loss:"Loss",athome:"Home",away:"Away",hbadge:"H",abadge:"A"},
+  fr:{evol:"Évolution du rating",cap:"Rating de la saison 2016 à aujourd'hui.",
+      world:"Classement mondial",nat:"Dans son pays",rating:"Rating actuel",trend:"Tendance (1 an)",
+      best:"Meilleur rating",bestyr:"Année record",worst:"Rating le plus bas",div:"Division actuelle",
+      seasons:"Saisons dans le modèle",loading:"Chargement…",notfound:"Club introuvable.",formtitle:"Pourquoi ce mouvement",formcap:"Les derniers matchs et le poids de chacun dans le classement.",vs:"contre",W:"V",D_:"N",L:"D",win:"Victoire",draw:"Nul",loss:"Défaite",athome:"À domicile",away:"À l'extérieur",hbadge:"D",abadge:"E"},
+  de:{evol:"Rating-Entwicklung",cap:"Rating von der Saison 2016 bis heute.",
+      world:"Weltrangliste",nat:"Im eigenen Land",rating:"Aktuelles Rating",trend:"Trend (1 Jahr)",
+      best:"Bestes Rating",bestyr:"Spitzenjahr",worst:"Niedrigstes Rating",div:"Aktuelle Division",
+      seasons:"Saisons im Modell",loading:"Lädt…",notfound:"Klub nicht gefunden.",formtitle:"Warum die Bewegung",formcap:"Die letzten Spiele und ihr Gewicht in der Rangliste.",vs:"gegen",W:"S",D_:"U",L:"N",win:"Sieg",draw:"Unentschieden",loss:"Niederlage",athome:"Heim",away:"Auswärts",hbadge:"H",abadge:"A"},
+  it:{evol:"Evoluzione del rating",cap:"Rating dalla stagione 2016 a oggi.",
+      world:"Classifica mondiale",nat:"Nel suo paese",rating:"Rating attuale",trend:"Tendenza (1 anno)",
+      best:"Miglior rating",bestyr:"Anno di picco",worst:"Rating più basso",div:"Divisione attuale",
+      seasons:"Stagioni nel modello",loading:"Caricamento…",notfound:"Club non trovato.",formtitle:"Perché si è mosso",formcap:"Le ultime partite e quanto ha pesato ciascuna in classifica.",vs:"contro",W:"V",D_:"P",L:"S",win:"Vittoria",draw:"Pareggio",loss:"Sconfitta",athome:"In casa",away:"In trasferta",hbadge:"C",abadge:"T"},
+  pt:{evol:"Evolução do rating",cap:"Rating desde a época 2016 até hoje.",
+      world:"Ranking mundial",nat:"No seu país",rating:"Rating atual",trend:"Tendência (1 ano)",
+      best:"Melhor rating",bestyr:"Ano de pico",worst:"Rating mais baixo",div:"Divisão atual",
+      seasons:"Épocas no modelo",loading:"A carregar…",notfound:"Clube não encontrado.",formtitle:"Porque se moveu",formcap:"Os últimos jogos e quanto pesou cada um no ranking.",vs:"contra",W:"V",D_:"E",L:"D",win:"Vitória",draw:"Empate",loss:"Derrota",athome:"Em casa",away:"Fora",hbadge:"C",abadge:"F"},
+};
+
+let CLUB=null, TEMPORADES=[], NOMS={};
+const empty=document.getElementById('empty');
+
+fetch('dades.json').then(r=>r.json()).then(j=>{
+  TEMPORADES=(j.meta&&j.meta.temporades)|| [2016,2017,2018,2019,2020,2021,2022,2023,2024,2025];
+  // mapa id → nom de club, per resoldre els rivals de la forma (el JSON ja no
+  // guarda el nom del rival, només el seu id, per estalviar espai)
+  (j.clubs||[]).forEach(c=>{ NOMS[String(c.id)]=c.club; });
+  CLUB=(j.clubs||[]).find(c=>String(c.id)===String(clubId));
+  if(!CLUB){ empty.style.display='block'; empty.textContent=(CT[lang]||CT.ca).notfound; return; }
+  draw();
+}).catch(err=>{ empty.style.display='block'; empty.textContent="Error: "+err; });
+
+function draw(){
+  const t=CT[lang]||CT.ca;
+  const c=CLUB;
+
+  // capçalera
+  document.getElementById('crest').textContent=isoPais(c.country);
+  document.getElementById('club-name').textContent=c.club;
+  document.getElementById('loc-flag').textContent=banderaPais(c.country);
+  document.getElementById('loc-country').textContent=nomPais(c.country,lang);
+  document.title=c.club+" · "+nomPais(c.country,lang);
+
+  // enllaç de la ubicació → pàgina del país
+  document.getElementById('loc').onclick=()=>{location.href='pais.html?c='+encodeURIComponent(c.country)+'&lang='+lang;};
+
+  // fil conductor
+  document.getElementById('bc-mon').textContent=(UI[lang]||UI.ca).mon;
+  document.getElementById('bc-mon').href='index.html?lang='+lang;
+  document.getElementById('bc-conf').textContent=confName(c.conf,lang);
+  document.getElementById('bc-conf').href='ranquing_paisos.html?conf='+c.conf+'&lang='+lang;
+  document.getElementById('bc-pais').textContent=nomPais(c.country,lang);
+  document.getElementById('bc-pais').href='pais.html?c='+encodeURIComponent(c.country)+'&lang='+lang;
+  document.getElementById('bc-club').textContent=c.club;
+
+  // estadístiques destacades
+  const trendTxt = c.trend>0?'▲'+c.trend : c.trend<0?'▼'+Math.abs(c.trend) : '=';
+  document.getElementById('stats').innerHTML=`
+    <div class="stat gold"><div class="n"><span class="rank-hash">#</span>${c.world}</div><div class="l">${t.world}</div></div>
+    <div class="stat"><div class="n"><span class="rank-hash">#</span>${c.nat}</div><div class="l">${t.nat}</div></div>
+    <div class="stat"><div class="n">${c.rating.toLocaleString('ca')}</div><div class="l">${t.rating}</div></div>
+    <div class="stat"><div class="n" style="color:${c.trend>0?'#7fd4a8':c.trend<0?'#e59a88':'#fff'}">${trendTxt}</div><div class="l">${t.trend}</div></div>`;
+
+  // gràfic d'evolució
+  document.getElementById('chart-title').textContent=t.evol;
+  document.getElementById('chart-cap').textContent=t.cap;
+  document.getElementById('chart-holder').innerHTML=chart(c.hist||[], TEMPORADES);
+  attachChartTooltip();
+
+  // forma recent (últims partits amb rival clicable + moviment)
+  drawForm(c, t);
+
+  // fets
+  const hist=(c.hist||[]).map((v,i)=>({v,yr:TEMPORADES[i]})).filter(x=>x.v!=null);
+  const best=hist.reduce((a,b)=>b.v>a.v?b:a,hist[0]||{v:0,yr:'—'});
+  const worst=hist.reduce((a,b)=>b.v<a.v?b:a,hist[0]||{v:0,yr:'—'});
+  const divName = c.div ? (c.div+"a") : "—";
+  document.getElementById('facts').innerHTML=`
+    <div class="fact"><div class="l">${t.best}</div><div class="v">${best.v?best.v.toLocaleString('ca'):'—'}</div></div>
+    <div class="fact"><div class="l">${t.bestyr}</div><div class="v">${best.yr||'—'}</div></div>
+    <div class="fact"><div class="l">${t.worst}</div><div class="v">${worst.v?worst.v.toLocaleString('ca'):'—'}</div></div>
+    <div class="fact"><div class="l">${t.div}</div><div class="v">${divName}</div></div>
+    <div class="fact"><div class="l">${t.seasons}</div><div class="v">${hist.length}</div></div>`;
+
+  document.getElementById('footer-txt').textContent=(UI[lang]||UI.ca).footer;
+  document.querySelectorAll('.lang').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  document.documentElement.lang=lang;
+}
+
+// dibuixa la forma recent: últims partits amb rival clicable i moviment
+function drawForm(c, t){
+  const forma=c.forma||[];
+  const card=document.getElementById('form-card');
+  if(!forma.length){ card.style.display='none'; return; }
+  card.style.display='block';
+  document.getElementById('form-title').textContent=t.formtitle;
+  document.getElementById('form-cap').textContent=t.formcap;
+  // tira compacta de pastilles V/E/D
+  const resLetter={V:t.W,E:t.D_,D:t.L};
+  document.getElementById('form-strip').innerHTML=forma.map(f=>
+    `<span class="${f.res}" title="${resName(f.res,t)}">${resLetter[f.res]}</span>`).join('');
+  // llista detallada amb rival clicable + moviment
+  document.getElementById('form-list').innerHTML=forma.slice().reverse().map(f=>{
+    const mv=f.mov, mc=mv>0?'up':mv<0?'down':'flat', mtxt=mv>0?'+'+mv:mv<0?String(mv):'0';
+    const oppname=NOMS[String(f.opp)]||'—';
+    const opp=f.opp&&oppname!=='—'
+      ? `<a data-club="${f.opp}">${oppname}</a>`
+      : oppname;
+    const venue=f.home===undefined?''
+      :`<span class="venue ${f.home?'home':'away'}" title="${f.home?t.athome:t.away}">${f.home?t.hbadge:t.abadge}</span>`;
+    return `<div class="form-row">
+      <span class="res-badge ${f.res}">${resLetter[f.res]}</span>
+      <span class="form-opp"><span class="vs">${t.vs}</span>${opp}${venue}</span>
+      <span class="form-mov ${mc}">${mtxt}</span>
+    </div>`;
+  }).join('');
+  // rival clicable → la seva fitxa
+  document.getElementById('form-list').onclick=e=>{
+    const a=e.target.closest('a[data-club]'); if(!a) return;
+    location.href='club.html?id='+encodeURIComponent(a.dataset.club)+'&lang='+lang;
+  };
+}
+function resName(r,t){return r==='V'?t.win:r==='E'?t.draw:t.loss}
+
+// dibuixa la corba de rating amb SVG pur (sense llibreries)
+function chart(hist, anys){
+  const pts=hist.map((v,i)=>({v,yr:anys[i]})).filter(p=>p.v!=null);
+  if(pts.length<2) return '<div style="padding:30px;color:#888;font-family:Helvetica,Arial">Encara no hi ha prou història per dibuixar la corba.</div>';
+  const W=900,H=320, ml=52,mr=20,mt=20,mb=40;
+  const iw=W-ml-mr, ih=H-mt-mb;
+  const vals=pts.map(p=>p.v);
+  let lo=Math.min(...vals), hi=Math.max(...vals);
+  const pad=Math.max(40,(hi-lo)*0.15); lo-=pad; hi+=pad;
+  const x=i=>ml+iw*(i/(pts.length-1));
+  const y=v=>mt+ih*(1-(v-lo)/(hi-lo));
+
+  // línies de graella horitzontals (4)
+  let grid='',ylabels='';
+  for(let g=0;g<=4;g++){
+    const yy=mt+ih*g/4; const val=Math.round(hi-(hi-lo)*g/4);
+    grid+=`<line class="grid" x1="${ml}" y1="${yy}" x2="${W-mr}" y2="${yy}"/>`;
+    ylabels+=`<text class="lbl" x="${ml-10}" y="${yy+4}" text-anchor="end">${val}</text>`;
+  }
+  // àrea + línia
+  const linePts=pts.map((p,i)=>`${x(i)},${y(p.v)}`).join(' ');
+  const area=`${ml},${mt+ih} ${linePts} ${x(pts.length-1)},${mt+ih}`;
+  // punts + etiquetes d'any (sencer) + valor al màxim
+  const maxV=Math.max(...vals);
+  let dots='',years='',hovers='';
+  pts.forEach((p,i)=>{
+    const isMax=p.v===maxV;
+    dots+=`<circle class="dot" data-i="${i}" cx="${x(i)}" cy="${y(p.v)}" r="4"/>`;
+    years+=`<text class="yr" x="${x(i)}" y="${H-14}" text-anchor="middle">${p.yr}</text>`;
+    // àrea sensible ampla (invisible), porta l'índex per il·luminar el seu punt
+    hovers+=`<circle class="hit" cx="${x(i)}" cy="${y(p.v)}" r="18" fill="transparent"
+      data-i="${i}" data-val="${p.v}" data-cx="${x(i)}" data-cy="${y(p.v)}" data-max="${isMax?1:0}"><title>${p.v}</title></circle>`;
+  });
+
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    <defs><linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12351f" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#12351f" stop-opacity="0"/>
+    </linearGradient></defs>
+    ${grid}${ylabels}
+    <polygon class="area" points="${area}"/>
+    <polyline class="line" points="${linePts}"/>
+    ${dots}${years}
+    <g id="tip" style="display:none">
+      <rect id="tip-bg" rx="3" fill="#0d1b2a"/>
+      <text id="tip-txt" fill="#fff" font-size="12" font-weight="700" text-anchor="middle" font-family="Helvetica,Arial"></text>
+    </g>
+    ${hovers}
+  </svg>`;
+}
+
+// tooltip interactiu: en passar per sobre d'un punt, mostra el rating (només la
+// xifra) i el punt es torna daurat. Sense hover, tots els punts són negres.
+function attachChartTooltip(){
+  const svg=document.querySelector('.chart'); if(!svg) return;
+  const tip=svg.querySelector('#tip'), bg=svg.querySelector('#tip-bg'), txt=svg.querySelector('#tip-txt');
+  if(!tip) return;
+  svg.querySelectorAll('.hit').forEach(h=>{
+    h.addEventListener('mouseenter',()=>{
+      const val=h.dataset.val, i=h.dataset.i;
+      const cx=+h.dataset.cx, cy=+h.dataset.cy;
+      txt.textContent=val;
+      const w=txt.getComputedTextLength()+18;
+      bg.setAttribute('x', cx-w/2); bg.setAttribute('y', cy-40);
+      bg.setAttribute('width', w); bg.setAttribute('height', 24);
+      txt.setAttribute('x', cx); txt.setAttribute('y', cy-23);
+      tip.style.display='block';
+      const dot=svg.querySelector('.dot[data-i="'+i+'"]');
+      if(dot) dot.classList.add('hi');
+    });
+    h.addEventListener('mouseleave',()=>{
+      tip.style.display='none';
+      svg.querySelectorAll('.dot').forEach(d=>d.classList.remove('hi'));
+    });
+  });
+}
+
+document.getElementById('langbar').addEventListener('click',e=>{
+  const b=e.target.closest('.lang');if(!b)return;
+  lang=b.dataset.lang;if(CLUB) draw();
+});
+</script>
+</body>
+</html>

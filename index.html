@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rànquing mundial de clubs de futbol</title>
+<style>
+  :root{
+    --ink:#0d1b2a; --ink-soft:#48566a; --paper:#f7f6f2;
+    --line:#e2ded4; --gold:#c8a24a; --gold-soft:#f0e6cc;
+    --band:#ffffff; --band-alt:#fbfaf6;
+    --up:#3a7d5c; --down:#b5533f; --pitch:#12351f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Georgia","Times New Roman",serif;background:var(--paper);
+    color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  /* Barra d'idioma */
+  .langbar{background:var(--ink);color:#fff}
+  .langbar .wrap{display:flex;justify-content:flex-end;align-items:center;gap:2px;
+    padding:0;flex-wrap:wrap}
+  .lang{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em;padding:9px 12px;cursor:pointer;
+    color:#8fa598;background:none;border:none;transition:.15s}
+  .lang:hover{color:#fff}
+  .lang.on{color:var(--pitch);background:var(--gold)}
+
+  header{background:linear-gradient(180deg,rgba(18,53,31,.94),rgba(13,27,42,.97)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 40px,transparent 40px 80px);
+    color:#fff;padding:44px 0 40px;border-bottom:3px solid var(--gold)}
+  .eyebrow{font-family:"Helvetica Neue",Arial,sans-serif;text-transform:uppercase;
+    letter-spacing:.28em;font-size:11px;font-weight:700;color:var(--gold);margin-bottom:14px}
+  header h1{font-size:clamp(28px,4.6vw,50px);font-weight:400;letter-spacing:-.01em;
+    line-height:1.06;max-width:18ch}
+  header h1 em{font-style:italic;color:var(--gold)}
+  .sub{margin-top:18px;max-width:58ch;color:#c9d2cc;font-size:16px}
+  .meta{margin-top:26px;display:flex;flex-wrap:wrap;gap:28px;
+    font-family:"Helvetica Neue",Arial,sans-serif}
+  .meta div{display:flex;flex-direction:column}
+  .meta .n{font-size:22px;font-weight:700;color:#fff}
+  .meta .l{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#8fa598;margin-top:3px}
+
+  .controls{position:sticky;top:0;z-index:10;background:rgba(247,246,242,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:14px 0}
+  .controls .wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .search{flex:1;min-width:200px;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:15px;padding:10px 14px;border:1px solid var(--line);border-radius:2px;
+    background:#fff;color:var(--ink)}
+  .search:focus{outline:2px solid var(--gold);outline-offset:-1px}
+  .filters{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.08em;padding:9px 14px;border:1px solid var(--line);
+    background:#fff;color:var(--ink-soft);border-radius:2px;cursor:pointer;transition:.15s}
+  .chip:hover{border-color:var(--gold)}
+  .chip.on{background:var(--pitch);color:#fff;border-color:var(--pitch)}
+
+  main{padding:8px 0 60px}
+  table{width:100%;border-collapse:collapse}
+  thead th{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;
+    text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);font-weight:700;
+    text-align:left;padding:16px 12px 10px;border-bottom:2px solid var(--ink);
+    position:sticky;top:57px;background:var(--paper)}
+  tbody tr{border-bottom:1px solid var(--line);background:var(--band)}
+  tbody tr:nth-child(even){background:var(--band-alt)}
+  tbody tr:hover{background:var(--gold-soft)}
+  td{padding:14px 12px;vertical-align:middle}
+  .rank{font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:18px;
+    width:56px;color:var(--ink);text-align:center}
+  tr[data-rank="1"] .rank,tr[data-rank="2"] .rank,tr[data-rank="3"] .rank{color:var(--gold)}
+  .club{font-size:19px;font-weight:400}
+  .club .flag{display:inline-block;width:22px;text-align:center;margin-right:8px;
+    font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px}
+  .country{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;color:var(--ink-soft);
+    text-transform:uppercase;letter-spacing:.06em}
+  .country-link{color:var(--ink-soft);text-decoration:none;cursor:pointer;
+    border-bottom:1px dotted transparent;transition:.13s}
+  .country-link:hover{color:var(--pitch);border-bottom-color:var(--pitch)}
+  .club-link{color:var(--ink);text-decoration:none;cursor:pointer;
+    border-bottom:1px dotted transparent;transition:.13s}
+  .club-link:hover{color:var(--pitch);border-bottom-color:var(--pitch)}
+  .rating{font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:18px;
+    text-align:right;font-variant-numeric:tabular-nums}
+  .conf{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;text-align:center;width:44px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%}
+  .dot.hi{background:var(--up)} .dot.mid{background:var(--gold)}
+  .empty{padding:50px;text-align:center;color:var(--ink-soft);font-style:italic}
+
+  .note{font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;color:var(--ink-soft);
+    border-top:1px solid var(--line);padding:22px 0 0;margin-top:8px;display:flex;gap:24px;
+    flex-wrap:wrap;align-items:center}
+  .note .k{display:flex;align-items:center;gap:7px}
+  footer{background:var(--pitch);color:#c9d2cc;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:13px;padding:30px 0;margin-top:40px}
+  footer strong{color:#fff}
+  @media(max-width:640px){.country,.conf-head,.conf{display:none}.club{font-size:16px}td{padding:12px 8px}}
+</style>
+<script src="paisos.js"></script>
+</head>
+<body>
+
+<div class="langbar"><div class="wrap" id="langbar">
+  <button class="lang on" data-lang="ca">CAT</button>
+  <button class="lang" data-lang="es">ESP</button>
+  <button class="lang" data-lang="en">ENG</button>
+  <button class="lang" data-lang="fr">FRA</button>
+  <button class="lang" data-lang="de">DEU</button>
+  <button class="lang" data-lang="it">ITA</button>
+  <button class="lang" data-lang="pt">POR</button>
+</div></div>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow" data-t="eyebrow"></div>
+    <h1 data-t="title"></h1>
+    <p class="sub" data-t="sub"></p>
+    <div class="meta">
+      <div><span class="n">645.116</span><span class="l" data-t="m_matches"></span></div>
+      <div><span class="n">87</span><span class="l" data-t="m_countries"></span></div>
+      <div><span class="n">10</span><span class="l" data-t="m_seasons"></span></div>
+      <div><span class="n">0,86</span><span class="l" data-t="m_corr"></span></div>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="wrap">
+    <input class="search" id="q" data-t-ph="search">
+    <div class="filters" id="filters">
+      <button class="chip on" data-c="all" data-t="f_all"></button>
+      <button class="chip" data-c="UEFA" data-t="f_uefa"></button>
+      <button class="chip" data-c="CONMEBOL" data-t="f_conmebol"></button>
+      <button class="chip" data-c="CONCACAF" data-t="f_concacaf"></button>
+      <button class="chip" data-c="AFC" data-t="f_afc"></button>
+      <button class="chip" data-c="CAF" data-t="f_caf"></button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <table>
+      <thead><tr>
+        <th style="text-align:center">#</th>
+        <th data-t="th_club"></th>
+        <th data-t="th_country"></th>
+        <th class="conf-head" style="text-align:center" data-t="th_conf"></th>
+        <th style="text-align:right" data-t="th_rating"></th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none" data-t="empty"></div>
+    <div class="note">
+      <div class="k"><span class="dot hi"></span> <span data-t="conf_hi"></span></div>
+      <div class="k"><span class="dot mid"></span> <span data-t="conf_mid"></span></div>
+      <div style="flex-basis:100%;color:#8a94a2" data-t="disclaimer"></div>
+    </div>
+  </div>
+</main>
+
+<footer><div class="wrap" data-t="footer"></div></footer>
+
+<script>
+// ---- Traduccions de la interfície (7 idiomes) ----
+const T = {
+  ca:{eyebrow:"Temporada 2025 · Actualitzat cada dilluns",
+    title:'Rànquing <em>mundial</em> de clubs de futbol',
+    sub:"Un sol model, 87 països i cinc confederacions a la mateixa escala. Sense enquestes ni opinions: només resultats. De l'Arsenal fins a la sisena divisió.",
+    m_matches:"Partits analitzats",m_countries:"Països",m_seasons:"Temporades",m_corr:"Correlació UEFA*",
+    search:"Cerca un club…",f_all:"Tot el món",f_uefa:"Europa",f_conmebol:"Sud-amèrica",
+    f_concacaf:"Nord-amèrica",f_afc:"Àsia",f_caf:"Àfrica",
+    th_club:"Club",th_country:"País",th_conf:"Conf.",th_rating:"Rating",
+    empty:"Cap club coincideix amb la cerca.",
+    conf_hi:"Confiança alta — lliga ben connectada internacionalment",
+    conf_mid:"Confiança mitjana — pocs partits internacionals recents",
+    disclaimer:"*La correlació de 0,86 amb el coeficient UEFA es mesura sobre els països ben connectats. Divergències com Sèrbia o Ucraïna s'expliquen i no són errors, sinó una diferència de criteri: aquest rànquing mesura resultats reals, no participació acumulada.",
+    footer:"Rànquing generat automàticament a partir de resultats esportius · Sense afiliació amb la UEFA ni la FIFA"},
+  es:{eyebrow:"Temporada 2025 · Actualizado cada lunes",
+    title:'Ranking <em>mundial</em> de clubes de fútbol',
+    sub:"Un solo modelo, 87 países y cinco confederaciones en la misma escala. Sin encuestas ni opiniones: solo resultados. Del Arsenal hasta la sexta división.",
+    m_matches:"Partidos analizados",m_countries:"Países",m_seasons:"Temporadas",m_corr:"Correlación UEFA*",
+    search:"Busca un club…",f_all:"Todo el mundo",f_uefa:"Europa",f_conmebol:"Sudamérica",
+    f_concacaf:"Norteamérica",f_afc:"Asia",f_caf:"África",
+    th_club:"Club",th_country:"País",th_conf:"Conf.",th_rating:"Rating",
+    empty:"Ningún club coincide con la búsqueda.",
+    conf_hi:"Confianza alta — liga bien conectada internacionalmente",
+    conf_mid:"Confianza media — pocos partidos internacionales recientes",
+    disclaimer:"*La correlación de 0,86 con el coeficiente UEFA se mide sobre los países bien conectados. Divergencias como Serbia o Ucrania se explican y no son errores, sino una diferencia de criterio: este ranking mide resultados reales, no participación acumulada.",
+    footer:"Ranking generado automáticamente a partir de resultados deportivos · Sin afiliación con la UEFA ni la FIFA"},
+  en:{eyebrow:"2025 Season · Updated every Monday",
+    title:'The <em>world</em> football club ranking',
+    sub:"One model, 87 countries and five confederations on the same scale. No polls, no opinions: just results. From Arsenal down to the sixth division.",
+    m_matches:"Matches analysed",m_countries:"Countries",m_seasons:"Seasons",m_corr:"UEFA correlation*",
+    search:"Search a club…",f_all:"Whole world",f_uefa:"Europe",f_conmebol:"South America",
+    f_concacaf:"North America",f_afc:"Asia",f_caf:"Africa",
+    th_club:"Club",th_country:"Country",th_conf:"Conf.",th_rating:"Rating",
+    empty:"No club matches your search.",
+    conf_hi:"High confidence — league well connected internationally",
+    conf_mid:"Medium confidence — few recent international matches",
+    disclaimer:"*The 0.86 correlation with the UEFA coefficient is measured over well-connected countries. Divergences like Serbia or Ukraine are explained and are not errors, but a difference of criterion: this ranking measures actual results, not accumulated participation.",
+    footer:"Ranking generated automatically from match results · Not affiliated with UEFA or FIFA"},
+  fr:{eyebrow:"Saison 2025 · Mis à jour chaque lundi",
+    title:'Le classement <em>mondial</em> des clubs de football',
+    sub:"Un seul modèle, 87 pays et cinq confédérations à la même échelle. Sans sondages ni opinions : rien que des résultats. D'Arsenal jusqu'à la sixième division.",
+    m_matches:"Matchs analysés",m_countries:"Pays",m_seasons:"Saisons",m_corr:"Corrélation UEFA*",
+    search:"Chercher un club…",f_all:"Monde entier",f_uefa:"Europe",f_conmebol:"Amérique du Sud",
+    f_concacaf:"Amérique du Nord",f_afc:"Asie",f_caf:"Afrique",
+    th_club:"Club",th_country:"Pays",th_conf:"Conf.",th_rating:"Rating",
+    empty:"Aucun club ne correspond à la recherche.",
+    conf_hi:"Confiance élevée — ligue bien connectée à l'international",
+    conf_mid:"Confiance moyenne — peu de matchs internationaux récents",
+    disclaimer:"*La corrélation de 0,86 avec le coefficient UEFA est mesurée sur les pays bien connectés. Les divergences comme la Serbie ou l'Ukraine s'expliquent et ne sont pas des erreurs, mais une différence de critère : ce classement mesure les résultats réels, pas la participation accumulée.",
+    footer:"Classement généré automatiquement à partir des résultats · Sans affiliation avec l'UEFA ni la FIFA"},
+  de:{eyebrow:"Saison 2025 · Jeden Montag aktualisiert",
+    title:'Die <em>Weltrangliste</em> der Fußballklubs',
+    sub:"Ein Modell, 87 Länder und fünf Konföderationen auf derselben Skala. Keine Umfragen, keine Meinungen: nur Ergebnisse. Von Arsenal bis zur sechsten Liga.",
+    m_matches:"Analysierte Spiele",m_countries:"Länder",m_seasons:"Saisons",m_corr:"UEFA-Korrelation*",
+    search:"Klub suchen…",f_all:"Ganze Welt",f_uefa:"Europa",f_conmebol:"Südamerika",
+    f_concacaf:"Nordamerika",f_afc:"Asien",f_caf:"Afrika",
+    th_club:"Klub",th_country:"Land",th_conf:"Konf.",th_rating:"Rating",
+    empty:"Kein Klub entspricht der Suche.",
+    conf_hi:"Hohe Zuverlässigkeit — international gut vernetzte Liga",
+    conf_mid:"Mittlere Zuverlässigkeit — wenige aktuelle internationale Spiele",
+    disclaimer:"*Die Korrelation von 0,86 mit dem UEFA-Koeffizienten wird über gut vernetzte Länder gemessen. Abweichungen wie Serbien oder die Ukraine sind erklärbar und keine Fehler, sondern ein Kriterienunterschied: Diese Rangliste misst tatsächliche Ergebnisse, nicht angesammelte Teilnahme.",
+    footer:"Rangliste automatisch aus Spielergebnissen erstellt · Keine Verbindung zu UEFA oder FIFA"},
+  it:{eyebrow:"Stagione 2025 · Aggiornato ogni lunedì",
+    title:'La classifica <em>mondiale</em> dei club di calcio',
+    sub:"Un solo modello, 87 paesi e cinque confederazioni sulla stessa scala. Niente sondaggi né opinioni: solo risultati. Dall'Arsenal fino alla sesta divisione.",
+    m_matches:"Partite analizzate",m_countries:"Paesi",m_seasons:"Stagioni",m_corr:"Correlazione UEFA*",
+    search:"Cerca un club…",f_all:"Tutto il mondo",f_uefa:"Europa",f_conmebol:"Sud America",
+    f_concacaf:"Nord America",f_afc:"Asia",f_caf:"Africa",
+    th_club:"Club",th_country:"Paese",th_conf:"Conf.",th_rating:"Rating",
+    empty:"Nessun club corrisponde alla ricerca.",
+    conf_hi:"Affidabilità alta — campionato ben collegato a livello internazionale",
+    conf_mid:"Affidabilità media — poche partite internazionali recenti",
+    disclaimer:"*La correlazione di 0,86 con il coefficiente UEFA è misurata sui paesi ben collegati. Divergenze come Serbia o Ucraina sono spiegate e non sono errori, ma una differenza di criterio: questa classifica misura i risultati reali, non la partecipazione accumulata.",
+    footer:"Classifica generata automaticamente dai risultati · Senza affiliazione con UEFA o FIFA"},
+  pt:{eyebrow:"Época 2025 · Atualizado todas as segundas",
+    title:'O ranking <em>mundial</em> de clubes de futebol',
+    sub:"Um só modelo, 87 países e cinco confederações à mesma escala. Sem sondagens nem opiniões: apenas resultados. Do Arsenal até à sexta divisão.",
+    m_matches:"Jogos analisados",m_countries:"Países",m_seasons:"Épocas",m_corr:"Correlação UEFA*",
+    search:"Procurar um clube…",f_all:"Todo o mundo",f_uefa:"Europa",f_conmebol:"América do Sul",
+    f_concacaf:"América do Norte",f_afc:"Ásia",f_caf:"África",
+    th_club:"Clube",th_country:"País",th_conf:"Conf.",th_rating:"Rating",
+    empty:"Nenhum clube corresponde à procura.",
+    conf_hi:"Confiança alta — liga bem ligada internacionalmente",
+    conf_mid:"Confiança média — poucos jogos internacionais recentes",
+    disclaimer:"*A correlação de 0,86 com o coeficiente UEFA é medida sobre os países bem ligados. Divergências como a Sérvia ou a Ucrânia explicam-se e não são erros, mas uma diferença de critério: este ranking mede resultados reais, não participação acumulada.",
+    footer:"Ranking gerado automaticamente a partir dos resultados · Sem afiliação com a UEFA ou a FIFA"},
+};
+
+// ---- Noms de països traduïts (només els que surten al top 30) ----
+const COUNTRY = {
+  Anglaterra:{ca:"Anglaterra",es:"Inglaterra",en:"England",fr:"Angleterre",de:"England",it:"Inghilterra",pt:"Inglaterra"},
+  Alemanya:{ca:"Alemanya",es:"Alemania",en:"Germany",fr:"Allemagne",de:"Deutschland",it:"Germania",pt:"Alemanha"},
+  Espanya:{ca:"Espanya",es:"España",en:"Spain",fr:"Espagne",de:"Spanien",it:"Spagna",pt:"Espanha"},
+  França:{ca:"França",es:"Francia",en:"France",fr:"France",de:"Frankreich",it:"Francia",pt:"França"},
+  Itàlia:{ca:"Itàlia",es:"Italia",en:"Italy",fr:"Italie",de:"Italien",it:"Italia",pt:"Itália"},
+  Portugal:{ca:"Portugal",es:"Portugal",en:"Portugal",fr:"Portugal",de:"Portugal",it:"Portogallo",pt:"Portugal"},
+  Bèlgica:{ca:"Bèlgica",es:"Bélgica",en:"Belgium",fr:"Belgique",de:"Belgien",it:"Belgio",pt:"Bélgica"},
+  "Països Baixos":{ca:"Països Baixos",es:"Países Bajos",en:"Netherlands",fr:"Pays-Bas",de:"Niederlande",it:"Paesi Bassi",pt:"Países Baixos"},
+};
+
+// Els noms i banderes de països vénen de paisos.js (font única, 87 països × 7 idiomes).
+
+let DATA=[], lang='ca', filterConf='all';
+const rows=document.getElementById('rows'), empty=document.getElementById('empty'), q=document.getElementById('q');
+
+// Carrega les dades reals del motor.
+fetch('dades.json')
+  .then(r=>r.json())
+  .then(j=>{
+    DATA=j.clubs.map(c=>({
+      id:c.id, r:c.world, club:c.club, country:c.country, conf:c.conf,
+      flag:banderaPais(c.country), rating:c.rating,
+      // confiança: alta si el club juga competició continental (té ponts al país)
+      cf: (c.conf==='UEFA' && c.world<=250) ? 'hi' : (c.world<=120?'hi':'mid'),
+    }));
+    // omplir el comptador de partits a la capçalera si el JSON el porta
+    if(j.meta){
+      const el=document.querySelector('.meta .n'); // primer = partits
+      if(el) el.textContent=j.meta.partits.toLocaleString('ca');
+    }
+    applyLang();
+  })
+  .catch(err=>{
+    empty.style.display='block';
+    empty.textContent='No s\'han pogut carregar les dades (dades.json). '+err;
+  });
+
+function applyLang(){
+  const t=T[lang];
+  document.querySelectorAll('[data-t]').forEach(el=>{el.innerHTML=t[el.dataset.t]});
+  document.querySelectorAll('[data-t-ph]').forEach(el=>{el.placeholder=t[el.dataset.tPh]});
+  document.documentElement.lang=lang;
+  render();
+}
+function render(){
+  const term=q.value.trim().toLowerCase();
+  const list=DATA.filter(d=>{
+    const okC=filterConf==='all'||d.conf===filterConf;
+    const okQ=!term||d.club.toLowerCase().includes(term)||countryName(d.country).toLowerCase().includes(term);
+    return okC&&okQ;
+  });
+  rows.innerHTML=list.map(d=>`
+    <tr data-rank="${d.r}">
+      <td class="rank">${d.r}</td>
+      <td class="club"><span class="flag">${d.flag}</span><a class="club-link" data-club="${d.id}">${d.club}</a></td>
+      <td class="country"><a class="country-link" data-country="${d.country}" title="${countryName(d.country)}">${countryName(d.country)}</a></td>
+      <td class="conf"><span class="dot ${d.cf}"></span></td>
+      <td class="rating">${d.rating.toLocaleString(lang)}</td>
+    </tr>`).join('');
+  empty.style.display=list.length?'none':'block';
+}
+// nom del país en l'idioma actual, via paisos.js
+function countryName(c){ return nomPais(c, lang); }
+
+document.getElementById('langbar').addEventListener('click',e=>{
+  const b=e.target.closest('.lang');if(!b)return;
+  document.querySelectorAll('.lang').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');lang=b.dataset.lang;applyLang();
+});
+document.getElementById('filters').addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  b.classList.add('on');filterConf=b.dataset.c;render();
+});
+// Clic sobre el nom del país → pàgina del país; sobre el club → fitxa del club
+document.getElementById('rows').addEventListener('click',e=>{
+  const cl=e.target.closest('.club-link');
+  if(cl){ window.location.href='club.html?id='+encodeURIComponent(cl.dataset.club)+'&lang='+lang; return; }
+  const a=e.target.closest('.country-link');if(!a)return;
+  const key=a.dataset.country;
+  window.location.href='pais.html?c='+encodeURIComponent(key)+'&lang='+lang;
+});
+q.addEventListener('input',render);
+applyLang();
+</script>
+</body>
+</html>
