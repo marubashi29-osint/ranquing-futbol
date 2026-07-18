@@ -85,6 +85,7 @@
   .conf{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;text-align:center;width:44px}
   .dot{display:inline-block;width:9px;height:9px;border-radius:50%}
   .dot.hi{background:var(--up)} .dot.mid{background:var(--gold)}
+  .dot.lo{background:#c2c8cc}
   .empty{padding:50px;text-align:center;color:var(--ink-soft);font-style:italic}
 
   .note{font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;color:var(--ink-soft);
@@ -154,6 +155,7 @@
     <div class="note">
       <div class="k"><span class="dot hi"></span> <span data-t="conf_hi"></span></div>
       <div class="k"><span class="dot mid"></span> <span data-t="conf_mid"></span></div>
+      <div class="k"><span class="dot lo"></span> <span data-t="conf_lo"></span></div>
       <div style="flex-basis:100%;color:#8a94a2" data-t="disclaimer"></div>
     </div>
   </div>
@@ -172,8 +174,9 @@ const T = {
     f_concacaf:"Nord-amèrica",f_afc:"Àsia",f_caf:"Àfrica",
     th_club:"Club",th_country:"País",th_conf:"Conf.",th_rating:"Rating",
     empty:"Cap club coincideix amb la cerca.",
-    conf_hi:"Confiança alta — lliga ben connectada internacionalment",
-    conf_mid:"Confiança mitjana — pocs partits internacionals recents",
+    conf_hi:"Confiança alta — el club juga competició continental amb regularitat",
+    conf_mid:"Confiança mitjana — participació continental puntual, o divisió pròxima als clubs que hi juguen",
+    conf_lo:"Confiança baixa — lluny de les competicions continentals",
     disclaimer:"*La correlació de 0,86 amb el coeficient UEFA es mesura sobre els països ben connectats. Divergències com Sèrbia o Ucraïna s'expliquen i no són errors, sinó una diferència de criteri: aquest rànquing mesura resultats reals, no participació acumulada.",
     footer:"Rànquing generat automàticament a partir de resultats esportius · Sense afiliació amb la UEFA ni la FIFA"},
   es:{eyebrow:"Temporada 2025 · Actualizado cada lunes",
@@ -184,8 +187,9 @@ const T = {
     f_concacaf:"Norteamérica",f_afc:"Asia",f_caf:"África",
     th_club:"Club",th_country:"País",th_conf:"Conf.",th_rating:"Rating",
     empty:"Ningún club coincide con la búsqueda.",
-    conf_hi:"Confianza alta — liga bien conectada internacionalmente",
-    conf_mid:"Confianza media — pocos partidos internacionales recientes",
+    conf_hi:"Confianza alta — el club juega competición continental con regularidad",
+    conf_mid:"Confianza media — participación continental puntual, o división cercana a los clubes que juegan",
+    conf_lo:"Confianza baja — lejos de las competiciones continentales",
     disclaimer:"*La correlación de 0,86 con el coeficiente UEFA se mide sobre los países bien conectados. Divergencias como Serbia o Ucrania se explican y no son errores, sino una diferencia de criterio: este ranking mide resultados reales, no participación acumulada.",
     footer:"Ranking generado automáticamente a partir de resultados deportivos · Sin afiliación con la UEFA ni la FIFA"},
   en:{eyebrow:"2025 Season · Updated every Monday",
@@ -196,8 +200,9 @@ const T = {
     f_concacaf:"North America",f_afc:"Asia",f_caf:"Africa",
     th_club:"Club",th_country:"Country",th_conf:"Conf.",th_rating:"Rating",
     empty:"No club matches your search.",
-    conf_hi:"High confidence — league well connected internationally",
-    conf_mid:"Medium confidence — few recent international matches",
+    conf_hi:"High confidence — the club plays continental competition regularly",
+    conf_mid:"Medium confidence — occasional continental play, or a division close to those who do",
+    conf_lo:"Low confidence — far from continental competition",
     disclaimer:"*The 0.86 correlation with the UEFA coefficient is measured over well-connected countries. Divergences like Serbia or Ukraine are explained and are not errors, but a difference of criterion: this ranking measures actual results, not accumulated participation.",
     footer:"Ranking generated automatically from match results · Not affiliated with UEFA or FIFA"},
   fr:{eyebrow:"Saison 2025 · Mis à jour chaque lundi",
@@ -208,8 +213,9 @@ const T = {
     f_concacaf:"Amérique du Nord",f_afc:"Asie",f_caf:"Afrique",
     th_club:"Club",th_country:"Pays",th_conf:"Conf.",th_rating:"Rating",
     empty:"Aucun club ne correspond à la recherche.",
-    conf_hi:"Confiance élevée — ligue bien connectée à l'international",
-    conf_mid:"Confiance moyenne — peu de matchs internationaux récents",
+    conf_hi:"Confiance élevée — le club joue régulièrement en coupe continentale",
+    conf_mid:"Confiance moyenne — participation continentale ponctuelle, ou division proche de ceux qui y jouent",
+    conf_lo:"Confiance faible — loin des compétitions continentales",
     disclaimer:"*La corrélation de 0,86 avec le coefficient UEFA est mesurée sur les pays bien connectés. Les divergences comme la Serbie ou l'Ukraine s'expliquent et ne sont pas des erreurs, mais une différence de critère : ce classement mesure les résultats réels, pas la participation accumulée.",
     footer:"Classement généré automatiquement à partir des résultats · Sans affiliation avec l'UEFA ni la FIFA"},
   de:{eyebrow:"Saison 2025 · Jeden Montag aktualisiert",
@@ -220,8 +226,9 @@ const T = {
     f_concacaf:"Nordamerika",f_afc:"Asien",f_caf:"Afrika",
     th_club:"Klub",th_country:"Land",th_conf:"Konf.",th_rating:"Rating",
     empty:"Kein Klub entspricht der Suche.",
-    conf_hi:"Hohe Zuverlässigkeit — international gut vernetzte Liga",
-    conf_mid:"Mittlere Zuverlässigkeit — wenige aktuelle internationale Spiele",
+    conf_hi:"Hohe Zuverlässigkeit — der Klub spielt regelmäßig international",
+    conf_mid:"Mittlere Zuverlässigkeit — gelegentlich international, oder eine Liga nahe an denen, die es sind",
+    conf_lo:"Geringe Zuverlässigkeit — weit weg vom internationalen Wettbewerb",
     disclaimer:"*Die Korrelation von 0,86 mit dem UEFA-Koeffizienten wird über gut vernetzte Länder gemessen. Abweichungen wie Serbien oder die Ukraine sind erklärbar und keine Fehler, sondern ein Kriterienunterschied: Diese Rangliste misst tatsächliche Ergebnisse, nicht angesammelte Teilnahme.",
     footer:"Rangliste automatisch aus Spielergebnissen erstellt · Keine Verbindung zu UEFA oder FIFA"},
   it:{eyebrow:"Stagione 2025 · Aggiornato ogni lunedì",
@@ -232,8 +239,9 @@ const T = {
     f_concacaf:"Nord America",f_afc:"Asia",f_caf:"Africa",
     th_club:"Club",th_country:"Paese",th_conf:"Conf.",th_rating:"Rating",
     empty:"Nessun club corrisponde alla ricerca.",
-    conf_hi:"Affidabilità alta — campionato ben collegato a livello internazionale",
-    conf_mid:"Affidabilità media — poche partite internazionali recenti",
+    conf_hi:"Affidabilità alta — il club gioca regolarmente le coppe continentali",
+    conf_mid:"Affidabilità media — partecipazione continentale saltuaria, o serie vicina a chi ci gioca",
+    conf_lo:"Affidabilità bassa — lontano dalle competizioni continentali",
     disclaimer:"*La correlazione di 0,86 con il coefficiente UEFA è misurata sui paesi ben collegati. Divergenze come Serbia o Ucraina sono spiegate e non sono errori, ma una differenza di criterio: questa classifica misura i risultati reali, non la partecipazione accumulata.",
     footer:"Classifica generata automaticamente dai risultati · Senza affiliazione con UEFA o FIFA"},
   pt:{eyebrow:"Época 2025 · Atualizado todas as segundas",
@@ -244,8 +252,9 @@ const T = {
     f_concacaf:"América do Norte",f_afc:"Ásia",f_caf:"África",
     th_club:"Clube",th_country:"País",th_conf:"Conf.",th_rating:"Rating",
     empty:"Nenhum clube corresponde à procura.",
-    conf_hi:"Confiança alta — liga bem ligada internacionalmente",
-    conf_mid:"Confiança média — poucos jogos internacionais recentes",
+    conf_hi:"Confiança alta — o clube joga competição continental regularmente",
+    conf_mid:"Confiança média — participação continental pontual, ou divisão próxima dos que jogam",
+    conf_lo:"Confiança baixa — longe das competições continentais",
     disclaimer:"*A correlação de 0,86 com o coeficiente UEFA é medida sobre os países bem ligados. Divergências como a Sérvia ou a Ucrânia explicam-se e não são erros, mas uma diferença de critério: este ranking mede resultados reais, não participação acumulada.",
     footer:"Ranking gerado automaticamente a partir dos resultados · Sem afiliação com a UEFA ou a FIFA"},
 };
@@ -275,7 +284,9 @@ fetch('dades.json')
       id:c.id, r:c.world, club:c.club, country:c.country, conf:c.conf,
       flag:banderaPais(c.country), rating:c.rating,
       // confiança: alta si el club juga competició continental (té ponts al país)
-      cf: (c.conf==='UEFA' && c.world<=250) ? 'hi' : (c.world<=120?'hi':'mid'),
+      // confiança calculada al motor a partir dels ponts reals (partits
+      // continentals del club) + divisió + connexió del seu país
+      cf: c.fiab || 'mid', ponts: c.ponts||0,
     }));
     // omplir el comptador de partits a la capçalera si el JSON el porta
     if(j.meta){
