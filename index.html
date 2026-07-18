@@ -70,8 +70,17 @@
     width:56px;color:var(--ink);text-align:center}
   tr[data-rank="1"] .rank,tr[data-rank="2"] .rank,tr[data-rank="3"] .rank{color:var(--gold)}
   .club{font-size:19px;font-weight:400}
-  .club .flag{display:inline-block;width:22px;text-align:center;margin-right:8px;
-    font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px}
+  /* espai d'escut: pastilla amb el codi ISO del pais. Quan hi hagi escuts
+     amb llicencia, es canvia aquest <span> per un <img>. Igual que a pais.html. */
+  .crest{display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:50%;margin-right:11px;vertical-align:middle;
+    background:var(--pitch);color:#fff;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:8.5px;font-weight:700;letter-spacing:.02em;flex-shrink:0;
+    border:1.5px solid var(--gold)}
+  .crest.club-link{cursor:pointer;transition:.13s;
+    color:#fff;border:1.5px solid var(--gold)}
+  .crest.club-link:hover{filter:brightness(1.15);border-color:#fff}
+  .club-cell{display:flex;align-items:center}
   .country{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;color:var(--ink-soft);
     text-transform:uppercase;letter-spacing:.06em}
   .country-link{color:var(--ink-soft);text-decoration:none;cursor:pointer;
@@ -282,8 +291,7 @@ fetch('dades.json')
   .then(j=>{
     DATA=j.clubs.map(c=>({
       id:c.id, r:c.world, club:c.club, country:c.country, conf:c.conf,
-      flag:banderaPais(c.country), rating:c.rating,
-      // confiança: alta si el club juga competició continental (té ponts al país)
+      rating:c.rating,
       // confiança calculada al motor a partir dels ponts reals (partits
       // continentals del club) + divisió + connexió del seu país
       cf: c.fiab || 'mid', ponts: c.ponts||0,
@@ -317,7 +325,7 @@ function render(){
   rows.innerHTML=list.map(d=>`
     <tr data-rank="${d.r}">
       <td class="rank">${d.r}</td>
-      <td class="club"><span class="flag">${d.flag}</span><a class="club-link" data-club="${d.id}">${d.club}</a></td>
+      <td class="club"><span class="club-cell"><span class="crest club-link" data-club="${d.id}" title="${d.club}">${isoPais(d.country)}</span><a class="club-link" data-club="${d.id}">${d.club}</a></span></td>
       <td class="country"><a class="country-link" data-country="${d.country}" title="${countryName(d.country)}">${countryName(d.country)}</a></td>
       <td class="conf"><span class="dot ${d.cf}"></span></td>
       <td class="rating">${d.rating.toLocaleString(lang)}</td>
