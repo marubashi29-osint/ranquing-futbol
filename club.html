@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Club · Rànquing</title>
+<title>Club · Rànquing mundial de futbol</title>
 <style>
   :root{
     --ink:#0d1b2a; --ink-soft:#48566a; --paper:#f7f6f2;
@@ -121,6 +121,7 @@
   footer strong{color:#fff}
 </style>
 <script src="paisos.js"></script>
+<script src="nav.js"></script>
 </head>
 <body>
 
@@ -263,20 +264,26 @@ function draw(){
   // gràfic d'evolució
   document.getElementById('chart-title').textContent=t.evol;
   document.getElementById('chart-cap').textContent=t.cap;
-  document.getElementById('chart-holder').innerHTML=chart(c.hist||[], TEMPORADES);
+  // Xarxa de seguretat: si la llista de temporades es mes curta que
+  // l'historic del club, l'allarguem. Aixi no depen que el JSON la porti.
+  const anysCorba = TEMPORADES.slice();
+  while(anysCorba.length < (c.hist||[]).length){
+    anysCorba.push((anysCorba[anysCorba.length-1] || 2016) + 1);
+  }
+  document.getElementById('chart-holder').innerHTML=chart(c.hist||[], anysCorba, !!c.xy);
   attachChartTooltip();
 
   // forma recent (últims partits amb rival clicable + moviment)
   drawForm(c, t);
 
   // fets
-  const hist=(c.hist||[]).map((v,i)=>({v,yr:TEMPORADES[i]})).filter(x=>x.v!=null);
+  const hist=(c.hist||[]).map((v,i)=>({v,yr:anysCorba[i]})).filter(x=>x.v!=null);
   const best=hist.reduce((a,b)=>b.v>a.v?b:a,hist[0]||{v:0,yr:'—'});
   const worst=hist.reduce((a,b)=>b.v<a.v?b:a,hist[0]||{v:0,yr:'—'});
   const divName = c.div ? (c.div+"a") : "—";
   document.getElementById('facts').innerHTML=`
     <div class="fact"><div class="l">${t.best}</div><div class="v">${best.v?best.v.toLocaleString('ca'):'—'}</div></div>
-    <div class="fact"><div class="l">${t.bestyr}</div><div class="v">${best.yr||'—'}</div></div>
+    <div class="fact"><div class="l">${t.bestyr}</div><div class="v">${best.yr?etiquetaTemp(best.yr,!!c.xy):'—'}</div></div>
     <div class="fact"><div class="l">${t.worst}</div><div class="v">${worst.v?worst.v.toLocaleString('ca'):'—'}</div></div>
     <div class="fact"><div class="l">${t.div}</div><div class="v">${divName}</div></div>
     <div class="fact"><div class="l">${t.seasons}</div><div class="v">${hist.length}</div></div>`;
@@ -321,8 +328,15 @@ function drawForm(c, t){
 }
 function resName(r,t){return r==='V'?t.win:r==='E'?t.draw:t.loss}
 
+// Etiqueta d'una temporada. A les lligues que van d'agost a maig
+// s'escriu "2016/17"; a les que van per any natural, "2016" a seques.
+// El motor ja ens diu de quin tipus es cada club (camp xy).
+function etiquetaTemp(any, creuada){
+  return creuada ? any + "/" + String(any + 1).slice(2) : String(any);
+}
+
 // dibuixa la corba de rating amb SVG pur (sense llibreries)
-function chart(hist, anys){
+function chart(hist, anys, creuada){
   const pts=hist.map((v,i)=>({v,yr:anys[i]})).filter(p=>p.v!=null);
   if(pts.length<2) return '<div style="padding:30px;color:#888;font-family:Helvetica,Arial">Encara no hi ha prou història per dibuixar la corba.</div>';
   const W=900,H=320, ml=52,mr=20,mt=20,mb=40;
@@ -349,7 +363,7 @@ function chart(hist, anys){
   pts.forEach((p,i)=>{
     const isMax=p.v===maxV;
     dots+=`<circle class="dot" data-i="${i}" cx="${x(i)}" cy="${y(p.v)}" r="4"/>`;
-    years+=`<text class="yr" x="${x(i)}" y="${H-14}" text-anchor="middle">${p.yr}</text>`;
+    years+=`<text class="yr" x="${x(i)}" y="${H-14}" text-anchor="middle">${etiquetaTemp(p.yr, creuada)}</text>`;
     // àrea sensible ampla (invisible), porta l'índex per il·luminar el seu punt
     hovers+=`<circle class="hit" cx="${x(i)}" cy="${y(p.v)}" r="18" fill="transparent"
       data-i="${i}" data-val="${p.v}" data-cx="${x(i)}" data-cy="${y(p.v)}" data-max="${isMax?1:0}"><title>${p.v}</title></circle>`;

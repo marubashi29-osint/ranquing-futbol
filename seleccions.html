@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seleccions · Rànquing mundial de futbol</title>
+<style>
+  :root{
+    --ink:#0d1b2a; --ink-soft:#48566a; --paper:#f7f6f2;
+    --line:#e2ded4; --gold:#c8a24a; --gold-soft:#f0e6cc;
+    --band-alt:#fbfaf6; --up:#3a7d5c; --down:#b5533f; --pitch:#12351f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Georgia","Times New Roman",serif;background:var(--paper);
+    color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  .langbar{background:var(--ink);color:#fff}
+  .langbar .wrap{display:flex;justify-content:flex-end;gap:2px;padding:0;flex-wrap:wrap}
+  .lang{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em;padding:9px 12px;cursor:pointer;
+    color:#8fa598;background:none;border:none;transition:.15s}
+  .lang:hover{color:#fff}
+  .lang.on{color:var(--pitch);background:var(--gold)}
+
+  header{background:linear-gradient(180deg,rgba(18,53,31,.94),rgba(13,27,42,.97)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 40px,transparent 40px 80px);
+    color:#fff;padding:34px 0 30px;border-bottom:3px solid var(--gold)}
+  .eyebrow{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;
+    text-transform:uppercase;letter-spacing:.16em;color:var(--gold);margin-bottom:10px}
+  header h1{font-size:clamp(26px,4vw,40px);font-weight:400;letter-spacing:-.01em}
+  header .sub{margin-top:12px;font-size:15px;color:#c9d2cc;max-width:70ch}
+  .stats{margin-top:22px;display:flex;flex-wrap:wrap;gap:12px}
+  .stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    border-radius:3px;padding:11px 16px}
+  .stat .n{font-family:"Helvetica Neue",Arial,sans-serif;font-size:20px;font-weight:700;
+    color:#fff;font-variant-numeric:tabular-nums}
+  .stat .l{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;
+    text-transform:uppercase;letter-spacing:.12em;color:#8fa598;margin-top:3px}
+
+  .eines{background:#fff;border-bottom:1px solid var(--line);padding:16px 0}
+  .eines .wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .chip{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.07em;padding:8px 16px;border-radius:2px;
+    border:1px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;
+    transition:.13s}
+  .chip:hover{border-color:var(--pitch);color:var(--pitch)}
+  .chip.on{background:var(--pitch);border-color:var(--pitch);color:#fff}
+  .search{flex:1;min-width:180px;font-family:inherit;font-size:15px;padding:9px 13px;
+    border:1px solid var(--line);border-radius:2px;background:var(--paper)}
+
+  main{padding:26px 0 50px}
+  table{width:100%;border-collapse:collapse;background:#fff;
+    border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  thead th{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);
+    text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);
+    background:var(--band-alt)}
+  thead th.c{text-align:center} thead th.r{text-align:right}
+  tbody tr{border-bottom:1px solid var(--line)}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:hover{background:var(--band-alt)}
+  td{padding:12px 14px;vertical-align:middle}
+  .rank{font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:16px;
+    width:60px;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+  tr[data-p="1"] .rank,tr[data-p="2"] .rank,tr[data-p="3"] .rank{color:var(--gold)}
+  .sel{font-size:18px}
+  .sel .flag{display:inline-block;width:26px;margin-right:9px;font-size:16px}
+  .rating{font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:17px;
+    text-align:right;font-variant-numeric:tabular-nums}
+  .trend{font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;font-weight:700;
+    text-align:center;width:70px}
+  .trend.up{color:var(--up)} .trend.down{color:var(--down)} .trend.flat{color:#b3b8bd}
+  .fi{text-align:center;width:60px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%}
+  .dot.hi{background:var(--up)} .dot.mid{background:var(--gold)}
+  .dot.lo{background:#c2c8cc}
+  .empty{padding:50px;text-align:center;color:var(--ink-soft);font-style:italic}
+
+  .llegenda{margin-top:20px;background:#fff;border:1px solid var(--line);
+    border-radius:4px;padding:18px 20px}
+  .llegenda .k{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12.5px;
+    color:var(--ink-soft);margin-bottom:7px;display:flex;gap:9px;align-items:flex-start}
+  .llegenda .k .dot{margin-top:5px;flex-shrink:0}
+  .nota{margin-top:14px;font-size:13.5px;color:var(--ink-soft);line-height:1.6}
+
+  footer{background:var(--pitch);color:#c9d2cc;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:13px;padding:26px 0;margin-top:36px}
+  footer .dates{color:#8fa598;font-size:12px;margin-top:8px}
+</style>
+<script src="paisos.js"></script>
+<script src="nav.js"></script>
+</head>
+<body>
+
+<div class="langbar"><div class="wrap" id="langbar">
+  <button class="lang" data-lang="ca">CAT</button>
+  <button class="lang" data-lang="es">ESP</button>
+  <button class="lang" data-lang="en">ENG</button>
+  <button class="lang" data-lang="fr">FRA</button>
+  <button class="lang" data-lang="de">DEU</button>
+  <button class="lang" data-lang="it">ITA</button>
+  <button class="lang" data-lang="pt">POR</button>
+</div></div>
+
+<header><div class="wrap">
+  <div class="eyebrow" id="eyebrow"></div>
+  <h1 id="titol"></h1>
+  <p class="sub" id="sub"></p>
+  <div class="stats" id="stats"></div>
+</div></header>
+
+<div class="eines"><div class="wrap">
+  <button class="chip" data-g="M" id="chip-m"></button>
+  <button class="chip" data-g="F" id="chip-f"></button>
+  <input class="search" id="q">
+</div></div>
+
+<main><div class="wrap">
+  <table>
+    <thead><tr>
+      <th id="th-pos"></th>
+      <th id="th-sel"></th>
+      <th class="c" id="th-tend"></th>
+      <th class="c" id="th-fiab"></th>
+      <th class="r" id="th-rating"></th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="empty" id="empty" style="display:none"></div>
+
+  <div class="llegenda">
+    <div class="k"><span class="dot hi"></span><span id="lg-hi"></span></div>
+    <div class="k"><span class="dot mid"></span><span id="lg-mid"></span></div>
+    <div class="k"><span class="dot lo"></span><span id="lg-lo"></span></div>
+    <div class="nota" id="nota"></div>
+  </div>
+</div></main>
+
+<footer><div class="wrap">
+  <span id="peu"></span>
+  <div class="dates" id="dates"></div>
+</div></footer>
+
+<script>
+const T = {
+  ca:{eyebrow:"Rànquing mundial de futbol",
+    tm:"Seleccions masculines", tf:"Seleccions femenines",
+    sub:"Rànquing calculat a partir dels resultats reals: cada partit pesa segons la força del rival i on s'ha jugat. Els partits de torneig en camp neutral no compten cap avantatge de camp, i els amistosos pesen menys que els oficials.",
+    seleccions:"Seleccions", avantatge:"Avantatge de camp", partits:"Partits al model",
+    pos:"Pos.", sel:"Selecció", tend:"Tendència", fiab:"Fiab.", rating:"Rating",
+    cerca:"Cerca una selecció…", nomatch:"Cap selecció coincideix.",
+    hi:"Fiabilitat alta — juga sovint, i contra seleccions del primer nivell",
+    mid:"Fiabilitat mitjana — juga prou, però amb poc contrast contra les fortes",
+    lo:"Fiabilitat baixa — juga poc, o gairebé sempre contra rivals del seu entorn",
+    nota:"<b>Per què la fiabilitat no depèn del rating.</b> Una selecció que guanya sempre dins de la seva zona però no s'enfronta mai a les fortes no està mal valorada: està poc <em>mesurada</em>. El seu rating és una estimació amb més marge, i el punt gris ho diu obertament en comptes d'amagar-ho.",
+    peu:"Rànquing generat automàticament a partir de resultats esportius · Sense afiliació amb la FIFA",
+    act:"Última actualització", ult:"Últim partit inclòs"},
+  es:{eyebrow:"Ranking mundial de fútbol",
+    tm:"Selecciones masculinas", tf:"Selecciones femeninas",
+    sub:"Ranking calculado a partir de los resultados reales: cada partido pesa según la fuerza del rival y dónde se jugó. Los partidos de torneo en campo neutral no computan ventaja de campo, y los amistosos pesan menos que los oficiales.",
+    seleccions:"Selecciones", avantatge:"Ventaja de campo", partits:"Partidos en el modelo",
+    pos:"Pos.", sel:"Selección", tend:"Tendencia", fiab:"Fiab.", rating:"Rating",
+    cerca:"Busca una selección…", nomatch:"Ninguna selección coincide.",
+    hi:"Fiabilidad alta — juega a menudo, y contra selecciones del primer nivel",
+    mid:"Fiabilidad media — juega bastante, pero con poco contraste ante las fuertes",
+    lo:"Fiabilidad baja — juega poco, o casi siempre ante rivales de su entorno",
+    nota:"<b>Por qué la fiabilidad no depende del rating.</b> Una selección que gana siempre dentro de su zona pero nunca se enfrenta a las fuertes no está mal valorada: está poco <em>medida</em>. Su rating es una estimación con más margen, y el punto gris lo dice abiertamente en lugar de ocultarlo.",
+    peu:"Ranking generado automáticamente a partir de resultados deportivos · Sin afiliación con la FIFA",
+    act:"Última actualización", ult:"Último partido incluido"},
+  en:{eyebrow:"World football ranking",
+    tm:"Men's national teams", tf:"Women's national teams",
+    sub:"A ranking computed from actual results: every match counts according to the strength of the opponent and where it was played. Tournament matches at neutral venues carry no home advantage, and friendlies count for less than competitive games.",
+    seleccions:"National teams", avantatge:"Home advantage", partits:"Matches in the model",
+    pos:"Pos.", sel:"National team", tend:"Trend", fiab:"Conf.", rating:"Rating",
+    cerca:"Search a national team…", nomatch:"No national team matches.",
+    hi:"High confidence — plays often, and against top-level sides",
+    mid:"Medium confidence — plays enough, but with little contrast against strong teams",
+    lo:"Low confidence — plays rarely, or almost only against nearby rivals",
+    nota:"<b>Why confidence doesn't depend on the rating.</b> A team that always wins inside its own region but never faces the strong sides isn't badly rated: it is barely <em>measured</em>. Its rating is an estimate with more uncertainty, and the grey dot says so openly instead of hiding it.",
+    peu:"Ranking generated automatically from match results · Not affiliated with FIFA",
+    act:"Last updated", ult:"Last match included"},
+  fr:{eyebrow:"Classement mondial de football",
+    tm:"Sélections masculines", tf:"Sélections féminines",
+    sub:"Classement calculé à partir des résultats réels : chaque match compte selon la force de l'adversaire et le lieu. Les matchs de tournoi sur terrain neutre ne comptent aucun avantage du terrain, et les amicaux pèsent moins que les officiels.",
+    seleccions:"Sélections", avantatge:"Avantage du terrain", partits:"Matchs dans le modèle",
+    pos:"Pos.", sel:"Sélection", tend:"Tendance", fiab:"Fiab.", rating:"Rating",
+    cerca:"Chercher une sélection…", nomatch:"Aucune sélection ne correspond.",
+    hi:"Fiabilité élevée — joue souvent, et contre des sélections de premier plan",
+    mid:"Fiabilité moyenne — joue assez, mais avec peu de contraste face aux fortes",
+    lo:"Fiabilité faible — joue peu, ou presque uniquement contre ses voisins",
+    nota:"<b>Pourquoi la fiabilité ne dépend pas du rating.</b> Une sélection qui gagne toujours dans sa zone mais n'affronte jamais les fortes n'est pas mal évaluée : elle est peu <em>mesurée</em>. Son rating comporte plus d'incertitude, et le point gris le dit ouvertement.",
+    peu:"Classement généré automatiquement à partir des résultats · Sans affiliation avec la FIFA",
+    act:"Dernière mise à jour", ult:"Dernier match inclus"},
+  de:{eyebrow:"Fußball-Weltrangliste",
+    tm:"Männer-Nationalteams", tf:"Frauen-Nationalteams",
+    sub:"Eine aus echten Ergebnissen berechnete Rangliste: jedes Spiel zählt nach der Stärke des Gegners und dem Spielort. Turnierspiele auf neutralem Platz zählen keinen Heimvorteil, und Freundschaftsspiele wiegen weniger als Pflichtspiele.",
+    seleccions:"Nationalteams", avantatge:"Heimvorteil", partits:"Spiele im Modell",
+    pos:"Pos.", sel:"Nationalteam", tend:"Trend", fiab:"Zuverl.", rating:"Rating",
+    cerca:"Nationalteam suchen…", nomatch:"Kein Nationalteam gefunden.",
+    hi:"Hohe Zuverlässigkeit — spielt oft, und gegen Spitzenteams",
+    mid:"Mittlere Zuverlässigkeit — spielt genug, aber mit wenig Kontrast gegen Starke",
+    lo:"Geringe Zuverlässigkeit — spielt selten, oder fast nur gegen Nachbarn",
+    nota:"<b>Warum die Zuverlässigkeit nicht vom Rating abhängt.</b> Ein Team, das in seiner Region immer gewinnt, aber nie gegen die Starken spielt, ist nicht schlecht bewertet: es ist kaum <em>gemessen</em>. Sein Rating ist eine Schätzung mit mehr Unsicherheit, und der graue Punkt sagt das offen.",
+    peu:"Rangliste automatisch aus Spielergebnissen erstellt · Keine Verbindung zur FIFA",
+    act:"Zuletzt aktualisiert", ult:"Letztes Spiel enthalten"},
+  it:{eyebrow:"Classifica mondiale di calcio",
+    tm:"Nazionali maschili", tf:"Nazionali femminili",
+    sub:"Classifica calcolata dai risultati reali: ogni partita pesa in base alla forza dell'avversario e al campo. Le partite di torneo in campo neutro non contano alcun vantaggio di campo, e le amichevoli pesano meno di quelle ufficiali.",
+    seleccions:"Nazionali", avantatge:"Vantaggio del campo", partits:"Partite nel modello",
+    pos:"Pos.", sel:"Nazionale", tend:"Tendenza", fiab:"Affid.", rating:"Rating",
+    cerca:"Cerca una nazionale…", nomatch:"Nessuna nazionale corrisponde.",
+    hi:"Affidabilità alta — gioca spesso, e contro nazionali di primo livello",
+    mid:"Affidabilità media — gioca abbastanza, ma con poco contrasto con le forti",
+    lo:"Affidabilità bassa — gioca poco, o quasi solo contro rivali vicini",
+    nota:"<b>Perché l'affidabilità non dipende dal rating.</b> Una nazionale che vince sempre nella propria zona ma non affronta mai le forti non è valutata male: è poco <em>misurata</em>. Il suo rating ha più incertezza, e il punto grigio lo dice apertamente.",
+    peu:"Classifica generata automaticamente dai risultati · Senza affiliazione con la FIFA",
+    act:"Ultimo aggiornamento", ult:"Ultima partita inclusa"},
+  pt:{eyebrow:"Ranking mundial de futebol",
+    tm:"Seleções masculinas", tf:"Seleções femininas",
+    sub:"Ranking calculado a partir dos resultados reais: cada jogo pesa consoante a força do adversário e onde se jogou. Os jogos de torneio em campo neutro não contam vantagem de campo, e os amigáveis pesam menos que os oficiais.",
+    seleccions:"Seleções", avantatge:"Vantagem de campo", partits:"Jogos no modelo",
+    pos:"Pos.", sel:"Seleção", tend:"Tendência", fiab:"Fiab.", rating:"Rating",
+    cerca:"Procurar uma seleção…", nomatch:"Nenhuma seleção corresponde.",
+    hi:"Fiabilidade alta — joga com frequência, e contra seleções de topo",
+    mid:"Fiabilidade média — joga o suficiente, mas com pouco contraste com as fortes",
+    lo:"Fiabilidade baixa — joga pouco, ou quase só contra vizinhos",
+    nota:"<b>Porque a fiabilidade não depende do rating.</b> Uma seleção que ganha sempre na sua zona mas nunca enfrenta as fortes não está mal avaliada: está pouco <em>medida</em>. O seu rating tem mais incerteza, e o ponto cinzento di-lo abertamente.",
+    peu:"Ranking gerado automaticamente a partir dos resultados · Sem afiliação com a FIFA",
+    act:"Última atualização", ult:"Último jogo incluído"},
+};
+
+const params = new URLSearchParams(location.search);
+let lang = params.get('lang') || 'ca';
+let genere = (params.get('g') || 'M').toUpperCase();
+if(genere !== 'F') genere = 'M';
+let DADES = null;
+
+const rows = document.getElementById('rows');
+const empty = document.getElementById('empty');
+const q = document.getElementById('q');
+
+fetch('seleccions.json')
+  .then(r => r.json())
+  .then(j => { DADES = j; pinta(); })
+  .catch(e => { empty.style.display='block';
+                empty.textContent = "No s'han pogut carregar les dades: " + e; });
+
+// nom de la selecció: traduït si el país és al paisos.js, si no el nom cru
+function nomSel(f){
+  return (typeof PAISOS !== 'undefined' && PAISOS[f.pais])
+       ? nomPais(f.pais, lang) : f.nom.replace(/ W$/, '');
+}
+
+function pinta(){
+  const t = T[lang] || T.ca;
+  document.documentElement.lang = lang;
+  document.getElementById('eyebrow').textContent = t.eyebrow;
+  document.getElementById('titol').textContent = genere==='M' ? t.tm : t.tf;
+  document.getElementById('sub').textContent = t.sub;
+  document.getElementById('chip-m').textContent = t.tm;
+  document.getElementById('chip-f').textContent = t.tf;
+  document.getElementById('chip-m').classList.toggle('on', genere==='M');
+  document.getElementById('chip-f').classList.toggle('on', genere==='F');
+  q.placeholder = t.cerca;
+  document.getElementById('th-pos').textContent = t.pos;
+  document.getElementById('th-sel').textContent = t.sel;
+  document.getElementById('th-tend').textContent = t.tend;
+  document.getElementById('th-fiab').textContent = t.fiab;
+  document.getElementById('th-rating').textContent = t.rating;
+  document.getElementById('lg-hi').textContent = t.hi;
+  document.getElementById('lg-mid').textContent = t.mid;
+  document.getElementById('lg-lo').textContent = t.lo;
+  document.getElementById('nota').innerHTML = t.nota;
+  document.getElementById('peu').textContent = t.peu;
+  document.querySelectorAll('.lang').forEach(b =>
+    b.classList.toggle('on', b.dataset.lang === lang));
+  document.title = (genere==='M' ? t.tm : t.tf) + ' · ' + t.eyebrow;
+
+  if(!DADES) return;
+  const m = DADES.meta || {};
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="n">${(m.seleccions||{})[genere]||'—'}</div>
+      <div class="l">${t.seleccions}</div></div>
+    <div class="stat"><div class="n">${(m.avantatge_camp||{})[genere]||'—'}</div>
+      <div class="l">${t.avantatge}</div></div>`;
+  document.getElementById('dates').textContent =
+    `${t.act}: ${m.actualitzat || '—'} · ${t.ult}: ${m.ultim_partit || '—'}`;
+  render();
+}
+
+function render(){
+  const t = T[lang] || T.ca;
+  const term = q.value.trim().toLowerCase();
+  const llista = (DADES[genere] || []).filter(f =>
+    !term || nomSel(f).toLowerCase().includes(term)
+          || f.nom.toLowerCase().includes(term));
+
+  rows.innerHTML = llista.map(f => {
+    const tv = f.tend || 0;
+    const tc = tv > 0 ? 'up' : tv < 0 ? 'down' : 'flat';
+    const tx = tv > 0 ? '▲'+tv : tv < 0 ? '▼'+Math.abs(tv) : '=';
+    const bandera = (typeof PAISOS !== 'undefined' && PAISOS[f.pais])
+                  ? banderaPais(f.pais) : '🏳️';
+    return `<tr data-p="${f.pos}">
+      <td class="rank">${f.pos}</td>
+      <td class="sel"><span class="flag">${bandera}</span>${nomSel(f)}</td>
+      <td class="trend ${tc}">${tx}</td>
+      <td class="fi"><span class="dot ${f.fiab}" title="${f.part} · ${f.top}"></span></td>
+      <td class="rating">${f.rating.toLocaleString('ca')}</td>
+    </tr>`;
+  }).join('');
+  empty.style.display = llista.length ? 'none' : 'block';
+  if(!llista.length) empty.textContent = t.nomatch;
+}
+
+document.getElementById('langbar').addEventListener('click', e => {
+  const b = e.target.closest('.lang'); if(!b) return;
+  lang = b.dataset.lang; pinta();
+});
+document.querySelectorAll('.chip').forEach(c =>
+  c.addEventListener('click', () => {
+    genere = c.dataset.g;
+    history.replaceState(null, '', `?g=${genere}&lang=${lang}`);
+    pinta();
+  }));
+q.addEventListener('input', render);
+</script>
+</body>
+</html>

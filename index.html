@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rànquing mundial de clubs de futbol</title>
+<title>Rànquing mundial de futbol</title>
 <style>
   :root{
     --ink:#0d1b2a; --ink-soft:#48566a; --paper:#f7f6f2;
@@ -107,6 +107,7 @@
   @media(max-width:640px){.country,.conf-head,.conf{display:none}.club{font-size:16px}td{padding:12px 8px}}
 </style>
 <script src="paisos.js"></script>
+<script src="nav.js"></script>
 </head>
 <body>
 
@@ -175,8 +176,8 @@
 <script>
 // ---- Traduccions de la interfície (7 idiomes) ----
 const T = {
-  ca:{eyebrow:"Temporada 2025 · Actualitzat cada dilluns",
-    title:'Rànquing <em>mundial</em> de clubs de futbol',
+  ca:{eyebrow:"Rànquing mundial de futbol",
+    title:'Rànquing mundial de <em>clubs</em>',
     sub:"Un sol model, 87 països i cinc confederacions a la mateixa escala. Sense enquestes ni opinions: només resultats. De l'Arsenal fins a la sisena divisió.",
     m_matches:"Partits analitzats",m_countries:"Països",m_seasons:"Temporades",m_corr:"Correlació UEFA*",
     search:"Cerca un club…",f_all:"Tot el món",f_uefa:"Europa",f_conmebol:"Sud-amèrica",
@@ -188,8 +189,8 @@ const T = {
     conf_lo:"Confiança baixa — lluny de les competicions continentals",
     disclaimer:"*La correlació de 0,86 amb el coeficient UEFA es mesura sobre els països ben connectats. Divergències com Sèrbia o Ucraïna s'expliquen i no són errors, sinó una diferència de criteri: aquest rànquing mesura resultats reals, no participació acumulada.",
     footer:"Rànquing generat automàticament a partir de resultats esportius · Sense afiliació amb la UEFA ni la FIFA"},
-  es:{eyebrow:"Temporada 2025 · Actualizado cada lunes",
-    title:'Ranking <em>mundial</em> de clubes de fútbol',
+  es:{eyebrow:"Ranking mundial de fútbol",
+    title:'Ranking mundial de <em>clubes</em>',
     sub:"Un solo modelo, 87 países y cinco confederaciones en la misma escala. Sin encuestas ni opiniones: solo resultados. Del Arsenal hasta la sexta división.",
     m_matches:"Partidos analizados",m_countries:"Países",m_seasons:"Temporadas",m_corr:"Correlación UEFA*",
     search:"Busca un club…",f_all:"Todo el mundo",f_uefa:"Europa",f_conmebol:"Sudamérica",
@@ -201,8 +202,8 @@ const T = {
     conf_lo:"Confianza baja — lejos de las competiciones continentales",
     disclaimer:"*La correlación de 0,86 con el coeficiente UEFA se mide sobre los países bien conectados. Divergencias como Serbia o Ucrania se explican y no son errores, sino una diferencia de criterio: este ranking mide resultados reales, no participación acumulada.",
     footer:"Ranking generado automáticamente a partir de resultados deportivos · Sin afiliación con la UEFA ni la FIFA"},
-  en:{eyebrow:"2025 Season · Updated every Monday",
-    title:'The <em>world</em> football club ranking',
+  en:{eyebrow:"World football ranking",
+    title:'World <em>club</em> ranking',
     sub:"One model, 87 countries and five confederations on the same scale. No polls, no opinions: just results. From Arsenal down to the sixth division.",
     m_matches:"Matches analysed",m_countries:"Countries",m_seasons:"Seasons",m_corr:"UEFA correlation*",
     search:"Search a club…",f_all:"Whole world",f_uefa:"Europe",f_conmebol:"South America",
@@ -214,8 +215,8 @@ const T = {
     conf_lo:"Low confidence — far from continental competition",
     disclaimer:"*The 0.86 correlation with the UEFA coefficient is measured over well-connected countries. Divergences like Serbia or Ukraine are explained and are not errors, but a difference of criterion: this ranking measures actual results, not accumulated participation.",
     footer:"Ranking generated automatically from match results · Not affiliated with UEFA or FIFA"},
-  fr:{eyebrow:"Saison 2025 · Mis à jour chaque lundi",
-    title:'Le classement <em>mondial</em> des clubs de football',
+  fr:{eyebrow:"Classement mondial de football",
+    title:'Classement mondial des <em>clubs</em>',
     sub:"Un seul modèle, 87 pays et cinq confédérations à la même échelle. Sans sondages ni opinions : rien que des résultats. D'Arsenal jusqu'à la sixième division.",
     m_matches:"Matchs analysés",m_countries:"Pays",m_seasons:"Saisons",m_corr:"Corrélation UEFA*",
     search:"Chercher un club…",f_all:"Monde entier",f_uefa:"Europe",f_conmebol:"Amérique du Sud",
@@ -227,8 +228,8 @@ const T = {
     conf_lo:"Confiance faible — loin des compétitions continentales",
     disclaimer:"*La corrélation de 0,86 avec le coefficient UEFA est mesurée sur les pays bien connectés. Les divergences comme la Serbie ou l'Ukraine s'expliquent et ne sont pas des erreurs, mais une différence de critère : ce classement mesure les résultats réels, pas la participation accumulée.",
     footer:"Classement généré automatiquement à partir des résultats · Sans affiliation avec l'UEFA ni la FIFA"},
-  de:{eyebrow:"Saison 2025 · Jeden Montag aktualisiert",
-    title:'Die <em>Weltrangliste</em> der Fußballklubs',
+  de:{eyebrow:"Fußball-Weltrangliste",
+    title:'<em>Klub</em>-Weltrangliste',
     sub:"Ein Modell, 87 Länder und fünf Konföderationen auf derselben Skala. Keine Umfragen, keine Meinungen: nur Ergebnisse. Von Arsenal bis zur sechsten Liga.",
     m_matches:"Analysierte Spiele",m_countries:"Länder",m_seasons:"Saisons",m_corr:"UEFA-Korrelation*",
     search:"Klub suchen…",f_all:"Ganze Welt",f_uefa:"Europa",f_conmebol:"Südamerika",
@@ -240,8 +241,8 @@ const T = {
     conf_lo:"Geringe Zuverlässigkeit — weit weg vom internationalen Wettbewerb",
     disclaimer:"*Die Korrelation von 0,86 mit dem UEFA-Koeffizienten wird über gut vernetzte Länder gemessen. Abweichungen wie Serbien oder die Ukraine sind erklärbar und keine Fehler, sondern ein Kriterienunterschied: Diese Rangliste misst tatsächliche Ergebnisse, nicht angesammelte Teilnahme.",
     footer:"Rangliste automatisch aus Spielergebnissen erstellt · Keine Verbindung zu UEFA oder FIFA"},
-  it:{eyebrow:"Stagione 2025 · Aggiornato ogni lunedì",
-    title:'La classifica <em>mondiale</em> dei club di calcio',
+  it:{eyebrow:"Classifica mondiale di calcio",
+    title:'Classifica mondiale per <em>club</em>',
     sub:"Un solo modello, 87 paesi e cinque confederazioni sulla stessa scala. Niente sondaggi né opinioni: solo risultati. Dall'Arsenal fino alla sesta divisione.",
     m_matches:"Partite analizzate",m_countries:"Paesi",m_seasons:"Stagioni",m_corr:"Correlazione UEFA*",
     search:"Cerca un club…",f_all:"Tutto il mondo",f_uefa:"Europa",f_conmebol:"Sud America",
@@ -253,8 +254,8 @@ const T = {
     conf_lo:"Affidabilità bassa — lontano dalle competizioni continentali",
     disclaimer:"*La correlazione di 0,86 con il coefficiente UEFA è misurata sui paesi ben collegati. Divergenze come Serbia o Ucraina sono spiegate e non sono errori, ma una differenza di criterio: questa classifica misura i risultati reali, non la partecipazione accumulata.",
     footer:"Classifica generata automaticamente dai risultati · Senza affiliazione con UEFA o FIFA"},
-  pt:{eyebrow:"Época 2025 · Atualizado todas as segundas",
-    title:'O ranking <em>mundial</em> de clubes de futebol',
+  pt:{eyebrow:"Ranking mundial de futebol",
+    title:'Ranking mundial de <em>clubes</em>',
     sub:"Um só modelo, 87 países e cinco confederações à mesma escala. Sem sondagens nem opiniões: apenas resultados. Do Arsenal até à sexta divisão.",
     m_matches:"Jogos analisados",m_countries:"Países",m_seasons:"Épocas",m_corr:"Correlação UEFA*",
     search:"Procurar um clube…",f_all:"Todo o mundo",f_uefa:"Europa",f_conmebol:"América do Sul",

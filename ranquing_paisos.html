@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rànquing mundial de països · Futbol</title>
+<title>Països · Rànquing mundial de futbol</title>
 <style>
   :root{
     --ink:#0d1b2a; --ink-soft:#48566a; --paper:#f7f6f2;
@@ -97,6 +97,7 @@
   .lang.on{color:var(--pitch);background:var(--gold)}
 </style>
 <script src="paisos.js"></script>
+<script src="nav.js"></script>
 </head>
 <body>
 
@@ -111,13 +112,9 @@
 </div></div>
 
 <nav class="breadcrumb"><div class="wrap">
-  <a href="#">Món</a>
+  <a id="bc-mon" data-ui="mon">Món</a>
   <span class="sep">▸</span>
-  <a href="#" class="here" id="bc-conf">Confederació</a>
-  <span class="sep">▸</span>
-  <a href="#">Lliga</a>
-  <span class="sep">▸</span>
-  <a href="#">Club</a>
+  <a class="here" id="bc-conf">Confederació</a>
 </div></nav>
 
 <header>
@@ -238,7 +235,11 @@ function render(){
 document.getElementById('confbar').addEventListener('click',e=>{
   const b=e.target.closest('.chip');if(!b)return;
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
-  b.classList.add('on');filterConf=b.dataset.conf;render();
+  b.classList.add('on');filterConf=b.dataset.conf;
+  // que l'adreca reflecteixi el que s'esta veient: aixi es pot copiar,
+  // compartir o recarregar i surt la mateixa confederacio
+  history.replaceState(null,'',`?conf=${filterConf}&lang=${lang}`);
+  render();
 });
 // Clic sobre un país → pàgina del país (clau estable + idioma)
 rows.addEventListener('click',e=>{
