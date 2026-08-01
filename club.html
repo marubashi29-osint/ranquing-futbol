@@ -88,6 +88,8 @@
   .fact .v{font-family:"Helvetica Neue",Arial,sans-serif;font-size:19px;font-weight:700;margin-top:5px;
     font-variant-numeric:tabular-nums}
   .fact .v.up{color:var(--up)} .fact .v.down{color:var(--down)}
+  /* els noms d'estadi són llargs: hi caben pitjor a 19px */
+  .fact .v.sm{font-size:15px;font-weight:600;line-height:1.3}
 
   /* forma recent: tira de partits amb rival clicable i moviment de rating */
   .form-list{display:flex;flex-direction:column;gap:1px;background:var(--line);
@@ -190,31 +192,31 @@ const CT={
   ca:{evol:"Evolució del rating",cap:"Rating de la temporada 2016 fins avui.",
       world:"Rànquing mundial",nat:"Al seu país",rating:"Rating actual",trend:"Tendència (1 any)",
       best:"Millor rating",bestyr:"Any del màxim",worst:"Rating més baix",div:"Divisió actual",
-      seasons:"Temporades al model",loading:"Carregant…",notfound:"No s'ha trobat aquest club.",formtitle:"Per què s'ha mogut",formcap:"Els últims partits i quant ha pesat cadascun al rànquing.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victòria",draw:"Empat",loss:"Derrota",athome:"A casa",away:"A fora",hbadge:"C",abadge:"F"},
+      seasons:"Temporades al model",loading:"Carregant…",notfound:"No s'ha trobat aquest club.",formtitle:"Per què s'ha mogut",formcap:"Els últims partits i quant ha pesat cadascun al rànquing.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victòria",draw:"Empat",loss:"Derrota",athome:"A casa",away:"A fora",hbadge:"C",abadge:"F",fund:"Fundat el",est:"Estadi",ciu:"Ciutat",cap:"Capacitat"},
   es:{evol:"Evolución del rating",cap:"Rating desde la temporada 2016 hasta hoy.",
       world:"Ranking mundial",nat:"En su país",rating:"Rating actual",trend:"Tendencia (1 año)",
       best:"Mejor rating",bestyr:"Año del máximo",worst:"Rating más bajo",div:"División actual",
-      seasons:"Temporadas en el modelo",loading:"Cargando…",notfound:"No se ha encontrado este club.",formtitle:"Por qué se ha movido",formcap:"Los últimos partidos y cuánto ha pesado cada uno en el ranking.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victoria",draw:"Empate",loss:"Derrota",athome:"En casa",away:"Fuera",hbadge:"C",abadge:"F"},
+      seasons:"Temporadas en el modelo",loading:"Cargando…",notfound:"No se ha encontrado este club.",formtitle:"Por qué se ha movido",formcap:"Los últimos partidos y cuánto ha pesado cada uno en el ranking.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victoria",draw:"Empate",loss:"Derrota",athome:"En casa",away:"Fuera",hbadge:"C",abadge:"F",fund:"Fundado en",est:"Estadio",ciu:"Ciudad",cap:"Capacidad"},
   en:{evol:"Rating evolution",cap:"Rating from the 2016 season to today.",
       world:"World ranking",nat:"In its country",rating:"Current rating",trend:"Trend (1 year)",
       best:"Best rating",bestyr:"Peak year",worst:"Lowest rating",div:"Current division",
-      seasons:"Seasons in the model",loading:"Loading…",notfound:"Club not found.",formtitle:"Why it moved",formcap:"The last matches and how much each one weighed in the ranking.",vs:"vs",W:"W",D_:"D",L:"L",win:"Win",draw:"Draw",loss:"Loss",athome:"Home",away:"Away",hbadge:"H",abadge:"A"},
+      seasons:"Seasons in the model",loading:"Loading…",notfound:"Club not found.",formtitle:"Why it moved",formcap:"The last matches and how much each one weighed in the ranking.",vs:"vs",W:"W",D_:"D",L:"L",win:"Win",draw:"Draw",loss:"Loss",athome:"Home",away:"Away",hbadge:"H",abadge:"A",fund:"Founded",est:"Stadium",ciu:"City",cap:"Capacity"},
   fr:{evol:"Évolution du rating",cap:"Rating de la saison 2016 à aujourd'hui.",
       world:"Classement mondial",nat:"Dans son pays",rating:"Rating actuel",trend:"Tendance (1 an)",
       best:"Meilleur rating",bestyr:"Année record",worst:"Rating le plus bas",div:"Division actuelle",
-      seasons:"Saisons dans le modèle",loading:"Chargement…",notfound:"Club introuvable.",formtitle:"Pourquoi ce mouvement",formcap:"Les derniers matchs et le poids de chacun dans le classement.",vs:"contre",W:"V",D_:"N",L:"D",win:"Victoire",draw:"Nul",loss:"Défaite",athome:"À domicile",away:"À l'extérieur",hbadge:"D",abadge:"E"},
+      seasons:"Saisons dans le modèle",loading:"Chargement…",notfound:"Club introuvable.",formtitle:"Pourquoi ce mouvement",formcap:"Les derniers matchs et le poids de chacun dans le classement.",vs:"contre",W:"V",D_:"N",L:"D",win:"Victoire",draw:"Nul",loss:"Défaite",athome:"À domicile",away:"À l'extérieur",hbadge:"D",abadge:"E",fund:"Fondé en",est:"Stade",ciu:"Ville",cap:"Capacité"},
   de:{evol:"Rating-Entwicklung",cap:"Rating von der Saison 2016 bis heute.",
       world:"Weltrangliste",nat:"Im eigenen Land",rating:"Aktuelles Rating",trend:"Trend (1 Jahr)",
       best:"Bestes Rating",bestyr:"Spitzenjahr",worst:"Niedrigstes Rating",div:"Aktuelle Division",
-      seasons:"Saisons im Modell",loading:"Lädt…",notfound:"Klub nicht gefunden.",formtitle:"Warum die Bewegung",formcap:"Die letzten Spiele und ihr Gewicht in der Rangliste.",vs:"gegen",W:"S",D_:"U",L:"N",win:"Sieg",draw:"Unentschieden",loss:"Niederlage",athome:"Heim",away:"Auswärts",hbadge:"H",abadge:"A"},
+      seasons:"Saisons im Modell",loading:"Lädt…",notfound:"Klub nicht gefunden.",formtitle:"Warum die Bewegung",formcap:"Die letzten Spiele und ihr Gewicht in der Rangliste.",vs:"gegen",W:"S",D_:"U",L:"N",win:"Sieg",draw:"Unentschieden",loss:"Niederlage",athome:"Heim",away:"Auswärts",hbadge:"H",abadge:"A",fund:"Gegründet",est:"Stadion",ciu:"Stadt",cap:"Kapazität"},
   it:{evol:"Evoluzione del rating",cap:"Rating dalla stagione 2016 a oggi.",
       world:"Classifica mondiale",nat:"Nel suo paese",rating:"Rating attuale",trend:"Tendenza (1 anno)",
       best:"Miglior rating",bestyr:"Anno di picco",worst:"Rating più basso",div:"Divisione attuale",
-      seasons:"Stagioni nel modello",loading:"Caricamento…",notfound:"Club non trovato.",formtitle:"Perché si è mosso",formcap:"Le ultime partite e quanto ha pesato ciascuna in classifica.",vs:"contro",W:"V",D_:"P",L:"S",win:"Vittoria",draw:"Pareggio",loss:"Sconfitta",athome:"In casa",away:"In trasferta",hbadge:"C",abadge:"T"},
+      seasons:"Stagioni nel modello",loading:"Caricamento…",notfound:"Club non trovato.",formtitle:"Perché si è mosso",formcap:"Le ultime partite e quanto ha pesato ciascuna in classifica.",vs:"contro",W:"V",D_:"P",L:"S",win:"Vittoria",draw:"Pareggio",loss:"Sconfitta",athome:"In casa",away:"In trasferta",hbadge:"C",abadge:"T",fund:"Fondato nel",est:"Stadio",ciu:"Città",cap:"Capienza"},
   pt:{evol:"Evolução do rating",cap:"Rating desde a época 2016 até hoje.",
       world:"Ranking mundial",nat:"No seu país",rating:"Rating atual",trend:"Tendência (1 ano)",
       best:"Melhor rating",bestyr:"Ano de pico",worst:"Rating mais baixo",div:"Divisão atual",
-      seasons:"Épocas no modelo",loading:"A carregar…",notfound:"Clube não encontrado.",formtitle:"Porque se moveu",formcap:"Os últimos jogos e quanto pesou cada um no ranking.",vs:"contra",W:"V",D_:"E",L:"D",win:"Vitória",draw:"Empate",loss:"Derrota",athome:"Em casa",away:"Fora",hbadge:"C",abadge:"F"},
+      seasons:"Épocas no modelo",loading:"A carregar…",notfound:"Clube não encontrado.",formtitle:"Porque se moveu",formcap:"Os últimos jogos e quanto pesou cada um no ranking.",vs:"contra",W:"V",D_:"E",L:"D",win:"Vitória",draw:"Empate",loss:"Derrota",athome:"Em casa",away:"Fora",hbadge:"C",abadge:"F",fund:"Fundado em",est:"Estádio",ciu:"Cidade",cap:"Lotação"},
 };
 
 let CLUB=null, TEMPORADES=[], NOMS={};
@@ -281,7 +283,15 @@ function draw(){
   const best=hist.reduce((a,b)=>b.v>a.v?b:a,hist[0]||{v:0,yr:'—'});
   const worst=hist.reduce((a,b)=>b.v<a.v?b:a,hist[0]||{v:0,yr:'—'});
   const divName = c.div ? (c.div+"a") : "—";
-  document.getElementById('facts').innerHTML=`
+  // Fets estàtics (fundació, estadi). El motor només els escriu si els té,
+  // o sigui que aquí n'hi ha prou de comprovar si la clau hi és: un club
+  // sense dades no mostra caselles buides, simplement no les té.
+  let fixos='';
+  if(c.fund) fixos+=`<div class="fact"><div class="l">${t.fund}</div><div class="v">${c.fund}</div></div>`;
+  if(c.est)  fixos+=`<div class="fact"><div class="l">${t.est}</div><div class="v sm">${esc(c.est)}</div></div>`;
+  if(c.ciu)  fixos+=`<div class="fact"><div class="l">${t.ciu}</div><div class="v sm">${esc(c.ciu)}</div></div>`;
+  if(c.cap)  fixos+=`<div class="fact"><div class="l">${t.cap}</div><div class="v">${c.cap.toLocaleString('ca')}</div></div>`;
+  document.getElementById('facts').innerHTML=fixos+`
     <div class="fact"><div class="l">${t.best}</div><div class="v">${best.v?best.v.toLocaleString('ca'):'—'}</div></div>
     <div class="fact"><div class="l">${t.bestyr}</div><div class="v">${best.yr?etiquetaTemp(best.yr,!!c.xy):'—'}</div></div>
     <div class="fact"><div class="l">${t.worst}</div><div class="v">${worst.v?worst.v.toLocaleString('ca'):'—'}</div></div>
@@ -327,6 +337,12 @@ function drawForm(c, t){
   };
 }
 function resName(r,t){return r==='V'?t.win:r==='E'?t.draw:t.loss}
+
+// Els noms d'estadi i ciutat venen de l'API i van a parar a innerHTML.
+// Cap n'hauria de portar, però un apòstrof o un "&" mal escapat trencaria
+// la pàgina sencera, i costa quatre línies evitar-ho.
+function esc(s){return String(s).replace(/[&<>"']/g,ch=>(
+  {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 
 // Etiqueta d'una temporada. A les lligues que van d'agost a maig
 // s'escriu "2016/17"; a les que van per any natural, "2016" a seques.
