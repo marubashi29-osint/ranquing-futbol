@@ -49,7 +49,33 @@
   .club-titles .loc:hover{color:#fff}
   .club-titles .loc .flag{margin-right:7px}
 
-  .stats{margin-top:26px;display:flex;flex-wrap:wrap;gap:14px}
+  .stats{display:flex;flex-wrap:wrap;gap:14px}
+  /* La capçalera va a dues columnes: a l'esquerra el rendiment (rànquing,
+     rating, tendència), a la dreta la identitat del club (fundació,
+     estadi, equipació). Si el club no té dades d'identitat, la columna
+     dreta queda buida i el flex la col·lapsa: la capçalera es veu
+     exactament com abans. */
+  .head-cols{margin-top:26px;display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap}
+  .head-cols .stats{flex:1 1 320px}
+  .identity{flex:0 1 auto;display:flex;gap:20px;align-items:center;
+    padding-left:26px;border-left:1px solid rgba(255,255,255,.14)}
+  .identity:empty{display:none}
+  .ident-grid{display:grid;grid-template-columns:repeat(2,auto);gap:13px 26px}
+  .ident-grid .l{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10px;
+    text-transform:uppercase;letter-spacing:.12em;color:#8fa598}
+  .ident-grid .v{font-family:"Helvetica Neue",Arial,sans-serif;font-size:15px;
+    font-weight:700;color:#fff;margin-top:3px;font-variant-numeric:tabular-nums}
+  .ident-grid .v.sm{font-size:13.5px;font-weight:600;max-width:190px;line-height:1.25}
+  .kit{flex-shrink:0;display:flex;gap:11px;align-items:flex-start}
+  .kit svg{display:block;width:52px;height:auto;
+    filter:drop-shadow(0 2px 5px rgba(0,0,0,.35))}
+  .kit1{text-align:center}
+  .kitl{font-family:"Helvetica Neue",Arial,sans-serif;font-size:8.5px;
+    letter-spacing:.1em;text-transform:uppercase;color:#8fa598;margin-top:7px}
+  @media(max-width:720px){
+    .identity{padding-left:0;border-left:0;border-top:1px solid rgba(255,255,255,.14);
+      padding-top:20px;width:100%}
+  }
   .stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
     border-radius:3px;padding:14px 20px;min-width:120px}
   .stat .n{font-family:"Helvetica Neue",Arial,sans-serif;font-size:26px;font-weight:700;color:#fff;
@@ -156,7 +182,10 @@
         <div class="loc" id="loc"><span class="flag" id="loc-flag"></span><span id="loc-country"></span></div>
       </div>
     </div>
-    <div class="stats" id="stats"></div>
+    <div class="head-cols">
+      <div class="stats" id="stats"></div>
+      <div class="identity" id="identity"></div>
+    </div>
   </div>
 </header>
 
@@ -192,31 +221,31 @@ const CT={
   ca:{evol:"Evolució del rating",cap:"Rating de la temporada 2016 fins avui.",
       world:"Rànquing mundial",nat:"Al seu país",rating:"Rating actual",trend:"Tendència (1 any)",
       best:"Millor rating",bestyr:"Any del màxim",worst:"Rating més baix",div:"Divisió actual",
-      seasons:"Temporades al model",loading:"Carregant…",notfound:"No s'ha trobat aquest club.",formtitle:"Per què s'ha mogut",formcap:"Els últims partits i quant ha pesat cadascun al rànquing.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victòria",draw:"Empat",loss:"Derrota",athome:"A casa",away:"A fora",hbadge:"C",abadge:"F",fund:"Fundat el",est:"Estadi",ciu:"Ciutat",cap:"Capacitat"},
+      seasons:"Temporades al model",loading:"Carregant…",notfound:"No s'ha trobat aquest club.",formtitle:"Per què s'ha mogut",formcap:"Els últims partits i quant ha pesat cadascun al rànquing.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victòria",draw:"Empat",loss:"Derrota",athome:"A casa",away:"A fora",hbadge:"C",abadge:"F",fund:"Fundat el",est:"Estadi",ciu:"Ciutat",cap:"Capacitat",kitLocal:"Local",kitVisitant:"Visitant",kitTercera:"Tercera"},
   es:{evol:"Evolución del rating",cap:"Rating desde la temporada 2016 hasta hoy.",
       world:"Ranking mundial",nat:"En su país",rating:"Rating actual",trend:"Tendencia (1 año)",
       best:"Mejor rating",bestyr:"Año del máximo",worst:"Rating más bajo",div:"División actual",
-      seasons:"Temporadas en el modelo",loading:"Cargando…",notfound:"No se ha encontrado este club.",formtitle:"Por qué se ha movido",formcap:"Los últimos partidos y cuánto ha pesado cada uno en el ranking.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victoria",draw:"Empate",loss:"Derrota",athome:"En casa",away:"Fuera",hbadge:"C",abadge:"F",fund:"Fundado en",est:"Estadio",ciu:"Ciudad",cap:"Capacidad"},
+      seasons:"Temporadas en el modelo",loading:"Cargando…",notfound:"No se ha encontrado este club.",formtitle:"Por qué se ha movido",formcap:"Los últimos partidos y cuánto ha pesado cada uno en el ranking.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victoria",draw:"Empate",loss:"Derrota",athome:"En casa",away:"Fuera",hbadge:"C",abadge:"F",fund:"Fundado en",est:"Estadio",ciu:"Ciudad",cap:"Capacidad",kitLocal:"Local",kitVisitant:"Visitante",kitTercera:"Tercera"},
   en:{evol:"Rating evolution",cap:"Rating from the 2016 season to today.",
       world:"World ranking",nat:"In its country",rating:"Current rating",trend:"Trend (1 year)",
       best:"Best rating",bestyr:"Peak year",worst:"Lowest rating",div:"Current division",
-      seasons:"Seasons in the model",loading:"Loading…",notfound:"Club not found.",formtitle:"Why it moved",formcap:"The last matches and how much each one weighed in the ranking.",vs:"vs",W:"W",D_:"D",L:"L",win:"Win",draw:"Draw",loss:"Loss",athome:"Home",away:"Away",hbadge:"H",abadge:"A",fund:"Founded",est:"Stadium",ciu:"City",cap:"Capacity"},
+      seasons:"Seasons in the model",loading:"Loading…",notfound:"Club not found.",formtitle:"Why it moved",formcap:"The last matches and how much each one weighed in the ranking.",vs:"vs",W:"W",D_:"D",L:"L",win:"Win",draw:"Draw",loss:"Loss",athome:"Home",away:"Away",hbadge:"H",abadge:"A",fund:"Founded",est:"Stadium",ciu:"City",cap:"Capacity",kitLocal:"Home",kitVisitant:"Away",kitTercera:"Third"},
   fr:{evol:"Évolution du rating",cap:"Rating de la saison 2016 à aujourd'hui.",
       world:"Classement mondial",nat:"Dans son pays",rating:"Rating actuel",trend:"Tendance (1 an)",
       best:"Meilleur rating",bestyr:"Année record",worst:"Rating le plus bas",div:"Division actuelle",
-      seasons:"Saisons dans le modèle",loading:"Chargement…",notfound:"Club introuvable.",formtitle:"Pourquoi ce mouvement",formcap:"Les derniers matchs et le poids de chacun dans le classement.",vs:"contre",W:"V",D_:"N",L:"D",win:"Victoire",draw:"Nul",loss:"Défaite",athome:"À domicile",away:"À l'extérieur",hbadge:"D",abadge:"E",fund:"Fondé en",est:"Stade",ciu:"Ville",cap:"Capacité"},
+      seasons:"Saisons dans le modèle",loading:"Chargement…",notfound:"Club introuvable.",formtitle:"Pourquoi ce mouvement",formcap:"Les derniers matchs et le poids de chacun dans le classement.",vs:"contre",W:"V",D_:"N",L:"D",win:"Victoire",draw:"Nul",loss:"Défaite",athome:"À domicile",away:"À l'extérieur",hbadge:"D",abadge:"E",fund:"Fondé en",est:"Stade",ciu:"Ville",cap:"Capacité",kitLocal:"Domicile",kitVisitant:"Extérieur",kitTercera:"Troisième"},
   de:{evol:"Rating-Entwicklung",cap:"Rating von der Saison 2016 bis heute.",
       world:"Weltrangliste",nat:"Im eigenen Land",rating:"Aktuelles Rating",trend:"Trend (1 Jahr)",
       best:"Bestes Rating",bestyr:"Spitzenjahr",worst:"Niedrigstes Rating",div:"Aktuelle Division",
-      seasons:"Saisons im Modell",loading:"Lädt…",notfound:"Klub nicht gefunden.",formtitle:"Warum die Bewegung",formcap:"Die letzten Spiele und ihr Gewicht in der Rangliste.",vs:"gegen",W:"S",D_:"U",L:"N",win:"Sieg",draw:"Unentschieden",loss:"Niederlage",athome:"Heim",away:"Auswärts",hbadge:"H",abadge:"A",fund:"Gegründet",est:"Stadion",ciu:"Stadt",cap:"Kapazität"},
+      seasons:"Saisons im Modell",loading:"Lädt…",notfound:"Klub nicht gefunden.",formtitle:"Warum die Bewegung",formcap:"Die letzten Spiele und ihr Gewicht in der Rangliste.",vs:"gegen",W:"S",D_:"U",L:"N",win:"Sieg",draw:"Unentschieden",loss:"Niederlage",athome:"Heim",away:"Auswärts",hbadge:"H",abadge:"A",fund:"Gegründet",est:"Stadion",ciu:"Stadt",cap:"Kapazität",kitLocal:"Heim",kitVisitant:"Auswärts",kitTercera:"Ausweich"},
   it:{evol:"Evoluzione del rating",cap:"Rating dalla stagione 2016 a oggi.",
       world:"Classifica mondiale",nat:"Nel suo paese",rating:"Rating attuale",trend:"Tendenza (1 anno)",
       best:"Miglior rating",bestyr:"Anno di picco",worst:"Rating più basso",div:"Divisione attuale",
-      seasons:"Stagioni nel modello",loading:"Caricamento…",notfound:"Club non trovato.",formtitle:"Perché si è mosso",formcap:"Le ultime partite e quanto ha pesato ciascuna in classifica.",vs:"contro",W:"V",D_:"P",L:"S",win:"Vittoria",draw:"Pareggio",loss:"Sconfitta",athome:"In casa",away:"In trasferta",hbadge:"C",abadge:"T",fund:"Fondato nel",est:"Stadio",ciu:"Città",cap:"Capienza"},
+      seasons:"Stagioni nel modello",loading:"Caricamento…",notfound:"Club non trovato.",formtitle:"Perché si è mosso",formcap:"Le ultime partite e quanto ha pesato ciascuna in classifica.",vs:"contro",W:"V",D_:"P",L:"S",win:"Vittoria",draw:"Pareggio",loss:"Sconfitta",athome:"In casa",away:"In trasferta",hbadge:"C",abadge:"T",fund:"Fondato nel",est:"Stadio",ciu:"Città",cap:"Capienza",kitLocal:"Casa",kitVisitant:"Trasferta",kitTercera:"Terza"},
   pt:{evol:"Evolução do rating",cap:"Rating desde a época 2016 até hoje.",
       world:"Ranking mundial",nat:"No seu país",rating:"Rating atual",trend:"Tendência (1 ano)",
       best:"Melhor rating",bestyr:"Ano de pico",worst:"Rating mais baixo",div:"Divisão atual",
-      seasons:"Épocas no modelo",loading:"A carregar…",notfound:"Clube não encontrado.",formtitle:"Porque se moveu",formcap:"Os últimos jogos e quanto pesou cada um no ranking.",vs:"contra",W:"V",D_:"E",L:"D",win:"Vitória",draw:"Empate",loss:"Derrota",athome:"Em casa",away:"Fora",hbadge:"C",abadge:"F",fund:"Fundado em",est:"Estádio",ciu:"Cidade",cap:"Lotação"},
+      seasons:"Épocas no modelo",loading:"A carregar…",notfound:"Clube não encontrado.",formtitle:"Porque se moveu",formcap:"Os últimos jogos e quanto pesou cada um no ranking.",vs:"contra",W:"V",D_:"E",L:"D",win:"Vitória",draw:"Empate",loss:"Derrota",athome:"Em casa",away:"Fora",hbadge:"C",abadge:"F",fund:"Fundado em",est:"Estádio",ciu:"Cidade",cap:"Lotação",kitLocal:"Casa",kitVisitant:"Fora",kitTercera:"Terceiro"},
 };
 
 let CLUB=null, TEMPORADES=[], NOMS={};
@@ -283,15 +312,21 @@ function draw(){
   const best=hist.reduce((a,b)=>b.v>a.v?b:a,hist[0]||{v:0,yr:'—'});
   const worst=hist.reduce((a,b)=>b.v<a.v?b:a,hist[0]||{v:0,yr:'—'});
   const divName = c.div ? (c.div+"a") : "—";
-  // Fets estàtics (fundació, estadi). El motor només els escriu si els té,
-  // o sigui que aquí n'hi ha prou de comprovar si la clau hi és: un club
-  // sense dades no mostra caselles buides, simplement no les té.
-  let fixos='';
-  if(c.fund) fixos+=`<div class="fact"><div class="l">${t.fund}</div><div class="v">${c.fund}</div></div>`;
-  if(c.est)  fixos+=`<div class="fact"><div class="l">${t.est}</div><div class="v sm">${esc(c.est)}</div></div>`;
-  if(c.ciu)  fixos+=`<div class="fact"><div class="l">${t.ciu}</div><div class="v sm">${esc(c.ciu)}</div></div>`;
-  if(c.cap)  fixos+=`<div class="fact"><div class="l">${t.cap}</div><div class="v">${c.cap.toLocaleString('ca')}</div></div>`;
-  document.getElementById('facts').innerHTML=fixos+`
+  // Identitat del club, a la capçalera. El motor només escriu aquests
+  // camps si els té, o sigui que aquí n'hi ha prou de mirar si la clau
+  // hi és: un club sense dades no ensenya caselles buides, simplement
+  // no té columna dreta.
+  let ident='';
+  if(c.fund) ident+=`<div><div class="l">${t.fund}</div><div class="v">${c.fund}</div></div>`;
+  if(c.est)  ident+=`<div><div class="l">${t.est}</div><div class="v sm">${esc(c.est)}</div></div>`;
+  if(c.ciu)  ident+=`<div><div class="l">${t.ciu}</div><div class="v sm">${esc(c.ciu)}</div></div>`;
+  if(c.cap)  ident+=`<div><div class="l">${t.cap}</div><div class="v">${c.cap.toLocaleString('ca')}</div></div>`;
+  const samarreta = kitsSVG(c.kits, t);
+  document.getElementById('identity').innerHTML =
+    (samarreta ? `<div class="kit">${samarreta}</div>` : '') +
+    (ident ? `<div class="ident-grid">${ident}</div>` : '');
+
+  document.getElementById('facts').innerHTML=`
     <div class="fact"><div class="l">${t.best}</div><div class="v">${best.v?best.v.toLocaleString('ca'):'—'}</div></div>
     <div class="fact"><div class="l">${t.bestyr}</div><div class="v">${best.yr?etiquetaTemp(best.yr,!!c.xy):'—'}</div></div>
     <div class="fact"><div class="l">${t.worst}</div><div class="v">${worst.v?worst.v.toLocaleString('ca'):'—'}</div></div>
@@ -343,6 +378,80 @@ function resName(r,t){return r==='V'?t.win:r==='E'?t.draw:t.loss}
 // la pàgina sencera, i costa quatre línies evitar-ho.
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>(
   {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+
+// ── EQUIPACIÓ ────────────────────────────────────────────────────────
+// Dibuixem l'equipació nosaltres a partir dels colors i el patró. Els
+// colors d'un club són un fet, no una obra: un escut no el podem fer
+// servir, però un dibuix propi pintat de blaugrana sí que és nostre.
+//
+// Espera una llista d'equipacions (local, visitant, tercera), i cada
+// equipació és
+//   [cos, secundari, patró, mànigues, pantalons, mitges]
+// amb tot opcional a partir del tercer: el que falti agafa el color
+// del cos. Patrons: llisa · ratlles · franges · meitats · banda ·
+// arlequinat · escapulat · escacs · manigues.
+const KIT_COS="M32,7 L16,3 L2,23 L16,36 L23,27 L23,92 L67,92 L67,27 L74,36 L88,23 L72,3 L58,7 C52,14 38,14 32,7 Z";
+const KIT_MANIGA_E="M16,3 L2,23 L16,36 L23,27 L23,0 Z";
+const KIT_MANIGA_D="M74,3 L88,23 L74,36 L67,27 L67,0 Z";
+const KIT_PANT="M2,0 L38,0 L40,34 L24,34 L20,18 L16,34 L0,34 Z";
+const KIT_LINIA='rgba(255,255,255,.5)';
+
+function kitSVG(kit){
+  if(!Array.isArray(kit)||!kit[0]) return '';
+  const hex=/^#[0-9a-fA-F]{3,8}$/;               // no ens fiem del JSON
+  const c =v=>hex.test(v||'')?v:null;
+  const cos=c(kit[0])||'#888';
+  const sec=c(kit[1])||'#FFFFFF';
+  const patro=kit[2]||'llisa';
+  const mag=c(kit[3])||cos;                      // el que falta és com el cos
+  const pan=c(kit[4])||cos;
+  const mit=c(kit[5])||cos;
+  const id='k'+Math.random().toString(36).slice(2,8);
+
+  let dins=`<rect width="90" height="100" fill="${cos}"/>`;
+  if(patro==='ratlles'){
+    for(let x=4;x<90;x+=15) dins+=`<rect x="${x}" width="8" height="100" fill="${sec}"/>`;
+  }else if(patro==='franges'){
+    for(let y=8;y<100;y+=22) dins+=`<rect y="${y}" width="90" height="11" fill="${sec}"/>`;
+  }else if(patro==='meitats'){
+    dins+=`<rect x="45" width="45" height="100" fill="${sec}"/>`;
+  }else if(patro==='banda'){
+    dins+=`<polygon points="0,72 66,0 90,0 0,98" fill="${sec}"/>`;
+  }else if(patro==='arlequinat'){
+    dins+=`<rect width="45" height="50" fill="${sec}"/>`
+         +`<rect x="45" y="50" width="45" height="50" fill="${sec}"/>`;
+  }else if(patro==='escapulat'){
+    dins+=`<polygon points="11,0 45,64 79,0 61,0 45,40 29,0" fill="${sec}"/>`;
+  }else if(patro==='escacs'){
+    for(let x=0;x<90;x+=15) for(let y=0;y<100;y+=15)
+      if(((x/15)+(y/15))%2) dins+=`<rect x="${x}" y="${y}" width="15" height="15" fill="${sec}"/>`;
+  }
+  // Les mànigues es pinten a sobre del patró: van a part del cos.
+  if(mag!==cos) dins+=`<path d="${KIT_MANIGA_E}" fill="${mag}"/>`
+                     +`<path d="${KIT_MANIGA_D}" fill="${mag}"/>`;
+
+  return `<svg viewBox="0 0 90 146" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Equipació">`
+    +`<defs><clipPath id="${id}"><path d="${KIT_COS}"/></clipPath></defs>`
+    +`<g clip-path="url(#${id})">${dins}</g>`
+    +`<path d="${KIT_COS}" fill="none" stroke="${KIT_LINIA}" stroke-width="1.6"/>`
+    // pantalons i mitges en una fila a sota: així el conjunt fa 90x146
+    // i no 90x194, que desequilibrava la capçalera.
+    +`<g transform="translate(6,104)"><path d="${KIT_PANT}" fill="${pan}" stroke="${KIT_LINIA}" stroke-width="1.6"/></g>`
+    +`<g transform="translate(52,104)">`
+    +`<rect x="1" width="13" height="34" rx="2.5" fill="${mit}" stroke="${KIT_LINIA}" stroke-width="1.6"/>`
+    +`<rect x="20" width="13" height="34" rx="2.5" fill="${mit}" stroke="${KIT_LINIA}" stroke-width="1.6"/></g>`
+    +`</svg>`;
+}
+
+// Fins a tres equipacions amb la seva etiqueta.
+function kitsSVG(kits,t){
+  if(!Array.isArray(kits)||!kits.length) return '';
+  const noms=[t.kitLocal,t.kitVisitant,t.kitTercera];
+  return kits.slice(0,3).map((k,i)=>{
+    const svg=kitSVG(k);
+    return svg?`<div class="kit1">${svg}<div class="kitl">${noms[i]||''}</div></div>`:'';
+  }).join('');
+}
 
 // Etiqueta d'una temporada. A les lligues que van d'agost a maig
 // s'escriu "2016/17"; a les que van per any natural, "2016" a seques.
