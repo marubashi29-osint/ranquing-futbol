@@ -149,3 +149,79 @@ const NAV = {
                  'https://ranquing-futbol.goatcounter.com/count');
   document.head.appendChild(s);
 })();
+
+/* ---- Atribucio de les equipacions -------------------------------- */
+/* Enganxa aixo al final del nav.js, DESPRES del bloc d'analitica.     */
+/*                                                                     */
+/* Els fitxers d'equipacio de Wikimedia Commons que son CC BY-SA o     */
+/* GFDL demanen atribucio. Com que el nav.js el carreguen totes les    */
+/* pagines, posant-ho aqui la linia surt a totes alhora -i a les que   */
+/* facis d'ara endavant tambe, sense haver-te'n de recordar.           */
+/*                                                                     */
+/* No fa res si la pagina ja porta la linia: aixi el club.html no      */
+/* l'ensenya dues vegades mentre no li treguis la que te escrita.      */
+
+(function () {
+  'use strict';
+
+  var TXT = {
+    ca: 'Equipacions', es: 'Equipaciones', en: 'Kits',
+    fr: 'Maillots', de: 'Trikots', it: 'Maglie', pt: 'Equipamentos'
+  };
+  var VEURE = {
+    ca: 'atribució i llicències', es: 'atribución y licencias',
+    en: 'attribution and licences', fr: 'attribution et licences',
+    de: 'Namensnennung und Lizenzen', it: 'attribuzione e licenze',
+    pt: 'atribuição e licenças'
+  };
+
+  function idioma() {
+    var q = new URLSearchParams(location.search).get('lang');
+    var l = q || (navigator.language || 'ca').slice(0, 2);
+    return TXT[l] ? l : 'ca';
+  }
+
+  function posa() {
+    var peu = document.querySelector('footer .wrap') ||
+              document.querySelector('footer');
+    if (!peu || peu.querySelector('.atrib')) return;   // ja hi es
+
+    var l = idioma();
+    var sufix = new URLSearchParams(location.search).get('lang')
+                ? '?lang=' + l : '';
+
+    var d = document.createElement('div');
+    d.className = 'atrib';
+    d.style.cssText = 'margin-top:7px;font-size:11px;color:#8fa598';
+    d.innerHTML = TXT[l] + ': <a href="https://commons.wikimedia.org/"' +
+      ' rel="noopener" target="_blank" style="color:#8fa598">' +
+      'Wikimedia Commons</a> · <a href="equipacions.html' + sufix +
+      '" style="color:#8fa598">' + VEURE[l] + '</a>';
+    peu.appendChild(d);
+  }
+
+  function arrenca() {
+    posa();
+    // A l'index.html el peu es <div class="wrap" data-t="footer"></div>
+    // i el nav.js hi escriu el text tradu\u00eft amb innerHTML, cosa que
+    // s'endu la nostra linia. En lloc de barallar-nos per l'ordre
+    // d'execucio, vigilem el peu i la tornem a posar cada cop que el
+    // seu contingut canvi\u00ef: aixi funciona tant si el text s'escriu
+    // abans com despres, i tambe en canviar d'idioma.
+    var peu = document.querySelector('footer');
+    if (!peu || typeof MutationObserver === 'undefined') return;
+    var ocupat = false;
+    new MutationObserver(function () {
+      if (ocupat) return;              // no reaccionem al nostre propi canvi
+      ocupat = true;
+      posa();
+      ocupat = false;
+    }).observe(peu, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', arrenca);
+  } else {
+    arrenca();
+  }
+})();
