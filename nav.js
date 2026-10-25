@@ -14,13 +14,20 @@
    ============================================================ */
 
 const NAV = {
-  ca: {clubs:"Clubs", m:"Seleccions masculines", f:"Seleccions femenines"},
-  es: {clubs:"Clubes", m:"Selecciones masculinas", f:"Selecciones femeninas"},
-  en: {clubs:"Clubs", m:"Men's national teams", f:"Women's national teams"},
-  fr: {clubs:"Clubs", m:"Sélections masculines", f:"Sélections féminines"},
-  de: {clubs:"Klubs", m:"Männer-Nationalteams", f:"Frauen-Nationalteams"},
-  it: {clubs:"Club", m:"Nazionali maschili", f:"Nazionali femminili"},
-  pt: {clubs:"Clubes", m:"Seleções masculinas", f:"Seleções femininas"},
+  ca: {clubs:"Clubs", m:"Seleccions masculines", f:"Seleccions femenines",
+       prop:"Pròximes jornades"},
+  es: {clubs:"Clubes", m:"Selecciones masculinas", f:"Selecciones femeninas",
+       prop:"Próximas jornadas"},
+  en: {clubs:"Clubs", m:"Men's national teams", f:"Women's national teams",
+       prop:"Upcoming fixtures"},
+  fr: {clubs:"Clubs", m:"Sélections masculines", f:"Sélections féminines",
+       prop:"Prochaines journées"},
+  de: {clubs:"Klubs", m:"Männer-Nationalteams", f:"Frauen-Nationalteams",
+       prop:"Nächste Spieltage"},
+  it: {clubs:"Club", m:"Nazionali maschili", f:"Nazionali femminili",
+       prop:"Prossime giornate"},
+  pt: {clubs:"Clubes", m:"Seleções masculinas", f:"Seleções femininas",
+       prop:"Próximas jornadas"},
 };
 
 (function(){
@@ -72,6 +79,7 @@ const NAV = {
       const g = new URLSearchParams(location.search).get("g");
       return (g && g.toUpperCase()==="F") ? "f" : "m";
     }
+    if(p.includes("properes")) return "prop";
     return "clubs";   // index, pais, club, ranquing_paisos: tot es de clubs
   }
 
@@ -91,6 +99,7 @@ const NAV = {
       <a href="index.html?lang=${lang}" class="${on==='clubs'?'actual':''}">${t.clubs}</a>
       <a href="seleccions.html?g=M&lang=${lang}" class="${on==='m'?'actual':''}">${t.m}</a>
       <a href="seleccions.html?g=F&lang=${lang}" class="${on==='f'?'actual':''}">${t.f}</a>
+      <a href="properes.html?lang=${lang}" class="${on==='prop'?'actual':''}">${t.prop}</a>
     </div>`;
   }
 

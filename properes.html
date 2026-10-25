@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pròximes jornades · Rànquing mundial de futbol</title>
+<style>
+  :root{
+    --ink:#0d1b2a; --ink-soft:#48566a; --paper:#f7f6f2;
+    --line:#e2ded4; --gold:#c8a24a; --gold-soft:#f0e6cc;
+    --band:#ffffff; --band-alt:#fbfaf6;
+    --up:#3a7d5c; --down:#b5533f; --pitch:#12351f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Georgia","Times New Roman",serif;background:var(--paper);
+    color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+  .langbar{background:var(--ink);color:#fff}
+  .langbar .wrap{display:flex;justify-content:flex-end;align-items:center;gap:2px;
+    padding:0;flex-wrap:wrap}
+  .lang{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em;padding:9px 12px;cursor:pointer;
+    color:#8fa598;background:none;border:none;transition:.15s}
+  .lang:hover{color:#fff}
+  .lang.on{color:var(--pitch);background:var(--gold)}
+
+  header{background:linear-gradient(180deg,rgba(18,53,31,.94),rgba(13,27,42,.97)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 40px,transparent 40px 80px);
+    color:#fff;padding:38px 0 34px;border-bottom:3px solid var(--gold)}
+  .eyebrow{font-family:"Helvetica Neue",Arial,sans-serif;text-transform:uppercase;
+    letter-spacing:.28em;font-size:11px;font-weight:700;color:var(--gold);margin-bottom:12px}
+  header h1{font-size:clamp(26px,4.2vw,42px);font-weight:400;letter-spacing:-.01em;line-height:1.06}
+  header h1 em{font-style:italic;color:var(--gold)}
+  .sub{margin-top:14px;max-width:62ch;color:#c9d2cc;font-size:15px}
+
+  .controls{position:sticky;top:0;z-index:10;background:rgba(247,246,242,.94);
+    backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:12px 0}
+  .controls .wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .search{flex:1;min-width:200px;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:14px;padding:9px 14px;border:1px solid var(--line);border-radius:999px;
+    background:#fff;color:var(--ink)}
+  .search:focus{outline:2px solid var(--gold);outline-offset:-1px}
+  .chip{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;font-weight:600;
+    padding:7px 13px;border:1px solid #d8d5cc;border-radius:999px;background:#fff;
+    color:var(--ink);cursor:pointer}
+  .chip:hover{border-color:var(--gold)}
+
+  main{padding:26px 0 60px}
+
+  /* Un país: capçalera clicable i el seu contingut */
+  .pais{border:1px solid var(--line);border-radius:5px;background:var(--band);
+    margin-bottom:10px;overflow:hidden}
+  .pais>summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;
+    align-items:center;gap:12px;font-family:"Helvetica Neue",Arial,sans-serif}
+  .pais>summary::-webkit-details-marker{display:none}
+  .pais>summary:hover{background:var(--band-alt)}
+  /* La capçalera del país va amb Helvetica, i Helvetica no porta glifs de
+     bandera: per això sortien les dues lletres (ES) o una bandera negra a
+     Anglaterra i Escòcia. La bandera ha de demanar la seva font a part.
+     El nom de classe .flag és el mateix que fa servir la resta de la web. */
+  .pais .flag{font-size:17px;line-height:1;
+    font-family:"Twemoji Country Flags","Helvetica Neue",Arial,sans-serif}
+  .pais .nom{font-size:15px;font-weight:600;flex:1}
+  .pais .quants{font-size:12px;color:var(--ink-soft)}
+  .pais .fletxa{color:var(--ink-soft);font-size:11px;transition:transform .15s}
+  .pais[open] .fletxa{transform:rotate(90deg)}
+  .pais[open]>summary{border-bottom:1px solid var(--line);background:var(--band-alt)}
+
+  .comp{padding:4px 0 10px}
+  .comp h3{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11.5px;
+    font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+    color:var(--ink-soft);padding:14px 18px 8px;display:flex;gap:10px;
+    align-items:baseline;flex-wrap:wrap}
+  .comp h3 .jor{font-weight:400;letter-spacing:.06em;text-transform:none;
+    color:#8a94a2;font-size:11px}
+
+  table{width:100%;border-collapse:collapse}
+  td{padding:9px 18px;border-top:1px solid var(--line);vertical-align:middle}
+  tr:hover td{background:var(--band-alt)}
+  .quan{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11.5px;
+    color:var(--ink-soft);white-space:nowrap;width:1%}
+  .eq{font-size:16px}
+  .eq a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--line);cursor:pointer}
+  .eq a:hover{color:var(--pitch);border-bottom-color:var(--pitch)}
+  .rt{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11.5px;
+    color:#8a94a2;margin-left:6px;font-variant-numeric:tabular-nums}
+  .vs{color:var(--ink-soft);font-size:12px;font-family:"Helvetica Neue",Arial,sans-serif;
+    padding:0 4px}
+  .prob{width:1%;white-space:nowrap}
+  .barra{display:flex;width:132px;height:7px;border-radius:999px;overflow:hidden;
+    background:var(--line)}
+  .barra i{display:block;height:100%}
+  .barra .w{background:var(--up)} .barra .d{background:var(--gold)}
+  .barra .l{background:var(--down)}
+  .xif{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;
+    color:var(--ink-soft);margin-top:4px;display:flex;justify-content:space-between;
+    width:132px;font-variant-numeric:tabular-nums}
+
+  .empty{padding:50px;text-align:center;color:var(--ink-soft);font-style:italic}
+  .note{font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;color:var(--ink-soft);
+    border-top:1px solid var(--line);padding:22px 0 0;margin-top:18px;display:flex;
+    gap:24px;flex-wrap:wrap;align-items:center}
+  .note .k{display:flex;align-items:center;gap:7px}
+  .note .mostra{width:22px;height:7px;border-radius:999px}
+  footer{background:var(--pitch);color:#c9d2cc;font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:13px;padding:30px 0;margin-top:40px}
+  footer strong{color:#fff}
+  @media(max-width:640px){
+    .rt{display:none} .eq{font-size:15px} td{padding:9px 12px}
+    .barra,.xif{width:84px}
+  }
+</style>
+<script src="paisos.js"></script>
+<script src="nav.js"></script>
+</head>
+<body>
+
+<div class="langbar"><div class="wrap" id="langbar">
+  <button class="lang on" data-lang="ca">CAT</button>
+  <button class="lang" data-lang="es">ESP</button>
+  <button class="lang" data-lang="en">ENG</button>
+  <button class="lang" data-lang="fr">FRA</button>
+  <button class="lang" data-lang="de">DEU</button>
+  <button class="lang" data-lang="it">ITA</button>
+  <button class="lang" data-lang="pt">POR</button>
+</div></div>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow" data-t="eyebrow"></div>
+    <h1 data-t="title"></h1>
+    <p class="sub" data-t="sub"></p>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="wrap">
+    <input class="search" id="q" data-t-ph="search">
+    <button class="chip" id="obre" data-t="obre"></button>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <div id="llista"></div>
+    <div class="empty" id="empty" data-t="loading"></div>
+    <div class="note">
+      <div class="k"><span class="mostra" style="background:var(--up)"></span>
+        <span data-t="n_local"></span></div>
+      <div class="k"><span class="mostra" style="background:var(--gold)"></span>
+        <span data-t="n_empat"></span></div>
+      <div class="k"><span class="mostra" style="background:var(--down)"></span>
+        <span data-t="n_visitant"></span></div>
+      <div style="flex-basis:100%;color:#8a94a2" data-t="disclaimer"></div>
+    </div>
+  </div>
+</main>
+
+<footer><div class="wrap" data-t="footer"></div></footer>
+
+<script>
+const T={
+  ca:{eyebrow:"Rànquing mundial de futbol",
+    title:'Les <em>pròximes</em> jornades',
+    sub:"Els partits que venen, amb el rating de cada equip i la probabilitat que dona el model. Tria un país per obrir-lo.",
+    search:"Cerca un club o un país…", obre:"Obre'ls tots", tanca:"Tanca'ls tots",
+    loading:"Carregant…", cap:"Cap partit programat aquests dies.",
+    nores:"Cap partit coincideix amb la cerca.",
+    n_local:"Victòria local", n_empat:"Empat", n_visitant:"Victòria visitant",
+    partits:"partits", comp:"competicions", partit:"partit", comp1:"competició", intl:"Competicions internacionals",
+    disclaimer:"Les probabilitats surten del mateix model que calcula el rànquing, amb l'avantatge de camp que ell mateix mesura. No són una predicció de resultat exacte ni tenen en compte lesions, sancions ni rotacions.",
+    footer:"Rànquing generat automàticament a partir de resultats esportius · Sense afiliació amb la UEFA ni la FIFA"},
+  es:{eyebrow:"Ranking mundial de fútbol",
+    title:'Las <em>próximas</em> jornadas',
+    sub:"Los partidos que vienen, con el rating de cada equipo y la probabilidad que da el modelo. Elige un país para abrirlo.",
+    search:"Busca un club o un país…", obre:"Abrirlos todos", tanca:"Cerrarlos todos",
+    loading:"Cargando…", cap:"Ningún partido programado estos días.",
+    nores:"Ningún partido coincide con la búsqueda.",
+    n_local:"Victoria local", n_empat:"Empate", n_visitant:"Victoria visitante",
+    partits:"partidos", comp:"competiciones", partit:"partido", comp1:"competición", intl:"Competiciones internacionales",
+    disclaimer:"Las probabilidades salen del mismo modelo que calcula el ranking, con la ventaja de campo que él mismo mide. No son una predicción de resultado exacto ni tienen en cuenta lesiones, sanciones ni rotaciones.",
+    footer:"Ranking generado automáticamente a partir de resultados deportivos · Sin afiliación con la UEFA ni la FIFA"},
+  en:{eyebrow:"World football ranking",
+    title:'The <em>upcoming</em> fixtures',
+    sub:"The matches ahead, with each team's rating and the probability the model gives. Pick a country to open it.",
+    search:"Search a club or a country…", obre:"Open all", tanca:"Close all",
+    loading:"Loading…", cap:"No fixtures scheduled for these days.",
+    nores:"No fixture matches your search.",
+    n_local:"Home win", n_empat:"Draw", n_visitant:"Away win",
+    partits:"fixtures", comp:"competitions", partit:"fixture", comp1:"competition", intl:"International competitions",
+    disclaimer:"The probabilities come from the same model that computes the ranking, using the home advantage it measures itself. They are not a scoreline prediction and take no account of injuries, suspensions or rotation.",
+    footer:"Ranking generated automatically from match results · Not affiliated with UEFA or FIFA"},
+  fr:{eyebrow:"Classement mondial de football",
+    title:'Les <em>prochaines</em> journées',
+    sub:"Les matchs à venir, avec la note de chaque équipe et la probabilité donnée par le modèle. Choisissez un pays pour l'ouvrir.",
+    search:"Cherchez un club ou un pays…", obre:"Tout ouvrir", tanca:"Tout fermer",
+    loading:"Chargement…", cap:"Aucun match programmé ces jours-ci.",
+    nores:"Aucun match ne correspond à la recherche.",
+    n_local:"Victoire à domicile", n_empat:"Nul", n_visitant:"Victoire à l'extérieur",
+    partits:"matchs", comp:"compétitions", partit:"match", comp1:"compétition", intl:"Compétitions internationales",
+    disclaimer:"Les probabilités proviennent du modèle qui calcule le classement, avec l'avantage du terrain qu'il mesure lui-même. Ce n'est pas une prédiction de score et cela ne tient pas compte des blessures, suspensions ou rotations.",
+    footer:"Classement généré automatiquement à partir des résultats · Sans affiliation avec l'UEFA ni la FIFA"},
+  de:{eyebrow:"Fußball-Weltrangliste",
+    title:'Die <em>nächsten</em> Spieltage',
+    sub:"Die kommenden Spiele, mit der Bewertung jeder Mannschaft und der Wahrscheinlichkeit des Modells. Wähle ein Land, um es zu öffnen.",
+    search:"Klub oder Land suchen…", obre:"Alle öffnen", tanca:"Alle schließen",
+    loading:"Lädt…", cap:"Keine Spiele für diese Tage angesetzt.",
+    nores:"Kein Spiel passt zur Suche.",
+    n_local:"Heimsieg", n_empat:"Unentschieden", n_visitant:"Auswärtssieg",
+    partits:"Spiele", comp:"Wettbewerbe", partit:"Spiel", comp1:"Wettbewerb", intl:"Internationale Wettbewerbe",
+    disclaimer:"Die Wahrscheinlichkeiten stammen aus demselben Modell, das die Rangliste berechnet, mit dem selbst gemessenen Heimvorteil. Sie sind keine Ergebnisprognose und berücksichtigen weder Verletzungen noch Sperren oder Rotation.",
+    footer:"Rangliste automatisch aus Spielergebnissen erstellt · Nicht mit UEFA oder FIFA verbunden"},
+  it:{eyebrow:"Classifica mondiale di calcio",
+    title:'Le <em>prossime</em> giornate',
+    sub:"Le partite in arrivo, con il rating di ogni squadra e la probabilità data dal modello. Scegli un paese per aprirlo.",
+    search:"Cerca un club o un paese…", obre:"Apri tutti", tanca:"Chiudi tutti",
+    loading:"Caricamento…", cap:"Nessuna partita in programma in questi giorni.",
+    nores:"Nessuna partita corrisponde alla ricerca.",
+    n_local:"Vittoria in casa", n_empat:"Pareggio", n_visitant:"Vittoria in trasferta",
+    partits:"partite", comp:"competizioni", partit:"partita", comp1:"competizione", intl:"Competizioni internazionali",
+    disclaimer:"Le probabilità provengono dallo stesso modello che calcola la classifica, con il fattore campo che misura da sé. Non sono una previsione di risultato e non tengono conto di infortuni, squalifiche o turnover.",
+    footer:"Classifica generata automaticamente dai risultati · Senza affiliazione con UEFA o FIFA"},
+  pt:{eyebrow:"Ranking mundial de futebol",
+    title:'As <em>próximas</em> jornadas',
+    sub:"Os jogos que aí vêm, com o rating de cada equipa e a probabilidade dada pelo modelo. Escolhe um país para o abrir.",
+    search:"Procura um clube ou um país…", obre:"Abrir todos", tanca:"Fechar todos",
+    loading:"A carregar…", cap:"Nenhum jogo agendado para estes dias.",
+    nores:"Nenhum jogo corresponde à procura.",
+    n_local:"Vitória em casa", n_empat:"Empate", n_visitant:"Vitória fora",
+    partits:"jogos", comp:"competições", partit:"jogo", comp1:"competição", intl:"Competições internacionais",
+    disclaimer:"As probabilidades vêm do mesmo modelo que calcula o ranking, com a vantagem caseira que ele próprio mede. Não são uma previsão de resultado nem têm em conta lesões, castigos ou rotações.",
+    footer:"Ranking gerado automaticamente a partir de resultados · Sem afiliação com a UEFA ou a FIFA"},
+};
+
+let DADES=null, lang=new URLSearchParams(location.search).get('lang')||'ca';
+if(!T[lang]) lang='ca';
+let totsOberts=false;
+const llista=document.getElementById('llista'), empty=document.getElementById('empty'),
+      q=document.getElementById('q');
+
+fetch('properes.json')
+  .then(r=>r.json())
+  .then(j=>{ DADES=j; applyLang(); })
+  .catch(err=>{
+    empty.style.display='block';
+    empty.textContent='No s\'han pogut carregar les dades (properes.json). '+err;
+  });
+
+function applyLang(){
+  const t=T[lang];
+  document.querySelectorAll('[data-t]').forEach(el=>{el.innerHTML=t[el.dataset.t]});
+  document.querySelectorAll('[data-t-ph]').forEach(el=>{el.placeholder=t[el.dataset.tPh]});
+  document.documentElement.lang=lang;
+  document.getElementById('obre').textContent=totsOberts?t.tanca:t.obre;
+  render();
+}
+
+// Data i hora en l'idioma i la zona horària de qui mira.
+function quan(iso){
+  const d=new Date(iso);
+  if(isNaN(d)) return iso.slice(0,10);
+  return d.toLocaleString(lang,{weekday:'short',day:'numeric',month:'short',
+                                hour:'2-digit',minute:'2-digit'});
+}
+
+// Les competicions continentals venen amb el pseudo-país "World": no és
+// cap país i paisos.js no en sap res, així que els posem nom i símbol
+// aquí mateix. Qualsevol altre va pel camí de sempre.
+const PSEUDO={World:1, Europe:1, "South America":1, "North America":1,
+              Africa:1, Asia:1, Oceania:1, International:1};
+function etiq(clau, t){
+  if(PSEUDO[clau]) return {nom:t.intl, fl:"🌍"};
+  return {nom:nomPais(clau, lang), fl:banderaPais(clau)};
+}
+function plural(n, un, molts){ return n===1?un:molts; }
+
+function barra(w,d,l){
+  return `<div class="barra"><i class="w" style="width:${w}%"></i>`
+    +`<i class="d" style="width:${d}%"></i><i class="l" style="width:${l}%"></i></div>`
+    +`<div class="xif"><span>${w}%</span><span>${d}%</span><span>${l}%</span></div>`;
+}
+
+function render(){
+  if(!DADES) return;
+  const t=T[lang], term=q.value.trim().toLowerCase();
+  let total=0;
+  const bloc=[];
+
+  // El JSON ve ordenat per nombre de partits, que no serveix per trobar-hi
+  // res: un país qualsevol amb quatre divisions passa al davant d'Anglaterra.
+  // Aquí els posem per ordre alfabètic del nom TRADUÏT, que canvia amb
+  // l'idioma, amb les competicions internacionals sempre primer.
+  const ordenats=(DADES.paisos||[]).slice().sort((a,b)=>{
+    const pa=PSEUDO[a.p]?0:1, pb=PSEUDO[b.p]?0:1;
+    if(pa!==pb) return pa-pb;
+    return etiq(a.p,t).nom.localeCompare(etiq(b.p,t).nom, lang);
+  });
+
+  for(const p of ordenats){
+    const et=etiq(p.p, t), nomP=et.nom;
+    // Si el terme coincideix amb el país, es mostra sencer; si no,
+    // filtrem partit a partit pel nom dels equips.
+    const paisCoincideix=term && nomP.toLowerCase().includes(term);
+    const comps=[];
+    let nPais=0;
+    for(const c of p.comps||[]){
+      const ms=(c.m||[]).filter(m=>!term||paisCoincideix
+        ||m[2].toLowerCase().includes(term)||m[5].toLowerCase().includes(term));
+      if(!ms.length) continue;
+      nPais+=ms.length;
+      comps.push(`<div class="comp">
+        <h3>${esc(c.n)}${c.jor?`<span class="jor">${esc(c.jor)}</span>`:''}</h3>
+        <table>${ms.map(m=>`<tr>
+          <td class="quan">${quan(m[0])}</td>
+          <td class="eq"><a data-club="${m[1]}">${esc(m[2])}</a><span class="rt">${m[3].toLocaleString(lang)}</span>
+            <span class="vs">—</span>
+            <a data-club="${m[4]}">${esc(m[5])}</a><span class="rt">${m[6].toLocaleString(lang)}</span></td>
+          <td class="prob">${barra(m[7],m[8],m[9])}</td>
+        </tr>`).join('')}</table></div>`);
+    }
+    if(!comps.length) continue;
+    total+=nPais;
+    // amb cerca activa s'obren sols, que és el que vols en buscar
+    const obert=(totsOberts||!!term)?' open':'';
+    bloc.push(`<details class="pais"${obert}>
+      <summary><span class="flag">${et.fl}</span>
+        <span class="nom">${esc(nomP)}</span>
+        <span class="quants">${nPais} ${plural(nPais,t.partit,t.partits)}
+          · ${comps.length} ${plural(comps.length,t.comp1,t.comp)}</span>
+        <span class="fletxa">▶</span></summary>
+      ${comps.join('')}</details>`);
+  }
+
+  llista.innerHTML=bloc.join('');
+  if(!total){
+    empty.style.display='block';
+    empty.textContent=term?t.nores:t.cap;
+  }else{ empty.style.display='none'; }
+}
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>(
+  {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+document.getElementById('langbar').addEventListener('click',e=>{
+  const b=e.target.closest('.lang');if(!b)return;
+  document.querySelectorAll('.lang').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');lang=b.dataset.lang;applyLang();
+});
+document.getElementById('obre').addEventListener('click',()=>{
+  totsOberts=!totsOberts;
+  document.getElementById('obre').textContent=totsOberts?T[lang].tanca:T[lang].obre;
+  render();
+});
+q.addEventListener('input',render);
+llista.addEventListener('click',e=>{
+  const a=e.target.closest('a[data-club]');if(!a)return;
+  location.href='club.html?id='+encodeURIComponent(a.dataset.club)+'&lang='+lang;
+});
+document.querySelectorAll('.lang').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+applyLang();
+</script>
+</body>
+</html>

@@ -145,6 +145,30 @@
     justify-content:center;font-family:"Helvetica Neue",Arial,sans-serif;font-weight:700;
     font-size:11px;color:#fff}
   .form-strip .V{background:var(--up)} .form-strip .E{background:#a9922f} .form-strip .D{background:var(--down)}
+
+  /* pròxims partits: mateixa tira que la forma, però amb la probabilitat
+     que dona el model en comptes del moviment de rating */
+  .prox-quan{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11.5px;
+    color:var(--ink-soft);flex-shrink:0;width:168px;line-height:1.35;
+    overflow:hidden}
+  .prox-quan b{font-weight:700;color:var(--ink)}
+  /* El nom de la competició pot ser llarg ("UEFA Champions League"): una
+     sola línia amb punts suspensius, i el nom sencer al title. */
+  .prox-comp{display:block;font-size:10.5px;color:#8a94a2;text-transform:uppercase;
+    letter-spacing:.07em;margin-top:3px;white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis}
+  .pbar{display:flex;width:120px;height:7px;border-radius:999px;overflow:hidden;
+    background:var(--line);flex-shrink:0}
+  .pbar i{display:block;height:100%}
+  .pbar .w{background:var(--up)} .pbar .d{background:#a9922f} .pbar .l{background:var(--down)}
+  .pxif{font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;color:var(--ink-soft);
+    margin-top:4px;display:flex;justify-content:space-between;width:120px;
+    font-variant-numeric:tabular-nums}
+  .prox-tot{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;margin-top:12px}
+  .prox-tot a{color:var(--ink-soft)}
+  @media(max-width:560px){
+    .prox-quan{width:110px;font-size:11px} .pbar,.pxif{width:74px}
+  }
   footer{background:var(--pitch);color:#c9d2cc;font-family:"Helvetica Neue",Arial,sans-serif;
     font-size:13px;padding:30px 0;margin-top:40px}
   footer strong{color:#fff}
@@ -194,6 +218,12 @@
 
 <main>
   <div class="wrap">
+    <div class="card" id="prox-card" style="display:none">
+      <h2 id="prox-title">Pròxims partits</h2>
+      <div class="cap" id="prox-cap"></div>
+      <div class="form-list" id="prox-list"></div>
+      <div class="prox-tot"><a id="prox-tot-a"></a></div>
+    </div>
     <div class="card" id="chart-card">
       <h2 id="chart-title">Evolució del rating</h2>
       <div class="cap" id="chart-cap">Rating de la temporada 2016 fins avui.</div>
@@ -226,31 +256,31 @@ const CT={
   ca:{evol:"Evolució del rating",cap:"Rating de la temporada 2016 fins avui.",
       world:"Rànquing mundial",nat:"Al seu país",rating:"Rating actual",trend:"Tendència (1 any)",
       best:"Millor rating",bestyr:"Any del màxim",worst:"Rating més baix",div:"Divisió actual",
-      seasons:"Temporades al model",loading:"Carregant…",notfound:"No s'ha trobat aquest club.",formtitle:"Per què s'ha mogut",formcap:"Els últims partits i quant ha pesat cadascun al rànquing.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victòria",draw:"Empat",loss:"Derrota",athome:"A casa",away:"A fora",hbadge:"C",abadge:"F",fund:"Fundat el",est:"Estadi",ciu:"Ciutat",cap:"Capacitat",kitLocal:"Local",kitVisitant:"Visitant",kitTercera:"Tercera"},
+      seasons:"Temporades al model",loading:"Carregant…",notfound:"No s'ha trobat aquest club.",formtitle:"Per què s'ha mogut",formcap:"Els últims partits i quant ha pesat cadascun al rànquing.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victòria",draw:"Empat",loss:"Derrota",athome:"A casa",away:"A fora",hbadge:"C",abadge:"F",fund:"Fundat el",est:"Estadi",ciu:"Ciutat",capac:"Capacitat",kitLocal:"Local",kitVisitant:"Visitant",kitTercera:"Tercera"},
   es:{evol:"Evolución del rating",cap:"Rating desde la temporada 2016 hasta hoy.",
       world:"Ranking mundial",nat:"En su país",rating:"Rating actual",trend:"Tendencia (1 año)",
       best:"Mejor rating",bestyr:"Año del máximo",worst:"Rating más bajo",div:"División actual",
-      seasons:"Temporadas en el modelo",loading:"Cargando…",notfound:"No se ha encontrado este club.",formtitle:"Por qué se ha movido",formcap:"Los últimos partidos y cuánto ha pesado cada uno en el ranking.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victoria",draw:"Empate",loss:"Derrota",athome:"En casa",away:"Fuera",hbadge:"C",abadge:"F",fund:"Fundado en",est:"Estadio",ciu:"Ciudad",cap:"Capacidad",kitLocal:"Local",kitVisitant:"Visitante",kitTercera:"Tercera"},
+      seasons:"Temporadas en el modelo",loading:"Cargando…",notfound:"No se ha encontrado este club.",formtitle:"Por qué se ha movido",formcap:"Los últimos partidos y cuánto ha pesado cada uno en el ranking.",vs:"contra",W:"G",D_:"E",L:"P",win:"Victoria",draw:"Empate",loss:"Derrota",athome:"En casa",away:"Fuera",hbadge:"C",abadge:"F",fund:"Fundado en",est:"Estadio",ciu:"Ciudad",capac:"Capacidad",kitLocal:"Local",kitVisitant:"Visitante",kitTercera:"Tercera"},
   en:{evol:"Rating evolution",cap:"Rating from the 2016 season to today.",
       world:"World ranking",nat:"In its country",rating:"Current rating",trend:"Trend (1 year)",
       best:"Best rating",bestyr:"Peak year",worst:"Lowest rating",div:"Current division",
-      seasons:"Seasons in the model",loading:"Loading…",notfound:"Club not found.",formtitle:"Why it moved",formcap:"The last matches and how much each one weighed in the ranking.",vs:"vs",W:"W",D_:"D",L:"L",win:"Win",draw:"Draw",loss:"Loss",athome:"Home",away:"Away",hbadge:"H",abadge:"A",fund:"Founded",est:"Stadium",ciu:"City",cap:"Capacity",kitLocal:"Home",kitVisitant:"Away",kitTercera:"Third"},
+      seasons:"Seasons in the model",loading:"Loading…",notfound:"Club not found.",formtitle:"Why it moved",formcap:"The last matches and how much each one weighed in the ranking.",vs:"vs",W:"W",D_:"D",L:"L",win:"Win",draw:"Draw",loss:"Loss",athome:"Home",away:"Away",hbadge:"H",abadge:"A",fund:"Founded",est:"Stadium",ciu:"City",capac:"Capacity",kitLocal:"Home",kitVisitant:"Away",kitTercera:"Third"},
   fr:{evol:"Évolution du rating",cap:"Rating de la saison 2016 à aujourd'hui.",
       world:"Classement mondial",nat:"Dans son pays",rating:"Rating actuel",trend:"Tendance (1 an)",
       best:"Meilleur rating",bestyr:"Année record",worst:"Rating le plus bas",div:"Division actuelle",
-      seasons:"Saisons dans le modèle",loading:"Chargement…",notfound:"Club introuvable.",formtitle:"Pourquoi ce mouvement",formcap:"Les derniers matchs et le poids de chacun dans le classement.",vs:"contre",W:"V",D_:"N",L:"D",win:"Victoire",draw:"Nul",loss:"Défaite",athome:"À domicile",away:"À l'extérieur",hbadge:"D",abadge:"E",fund:"Fondé en",est:"Stade",ciu:"Ville",cap:"Capacité",kitLocal:"Domicile",kitVisitant:"Extérieur",kitTercera:"Troisième"},
+      seasons:"Saisons dans le modèle",loading:"Chargement…",notfound:"Club introuvable.",formtitle:"Pourquoi ce mouvement",formcap:"Les derniers matchs et le poids de chacun dans le classement.",vs:"contre",W:"V",D_:"N",L:"D",win:"Victoire",draw:"Nul",loss:"Défaite",athome:"À domicile",away:"À l'extérieur",hbadge:"D",abadge:"E",fund:"Fondé en",est:"Stade",ciu:"Ville",capac:"Capacité",kitLocal:"Domicile",kitVisitant:"Extérieur",kitTercera:"Troisième"},
   de:{evol:"Rating-Entwicklung",cap:"Rating von der Saison 2016 bis heute.",
       world:"Weltrangliste",nat:"Im eigenen Land",rating:"Aktuelles Rating",trend:"Trend (1 Jahr)",
       best:"Bestes Rating",bestyr:"Spitzenjahr",worst:"Niedrigstes Rating",div:"Aktuelle Division",
-      seasons:"Saisons im Modell",loading:"Lädt…",notfound:"Klub nicht gefunden.",formtitle:"Warum die Bewegung",formcap:"Die letzten Spiele und ihr Gewicht in der Rangliste.",vs:"gegen",W:"S",D_:"U",L:"N",win:"Sieg",draw:"Unentschieden",loss:"Niederlage",athome:"Heim",away:"Auswärts",hbadge:"H",abadge:"A",fund:"Gegründet",est:"Stadion",ciu:"Stadt",cap:"Kapazität",kitLocal:"Heim",kitVisitant:"Auswärts",kitTercera:"Ausweich"},
+      seasons:"Saisons im Modell",loading:"Lädt…",notfound:"Klub nicht gefunden.",formtitle:"Warum die Bewegung",formcap:"Die letzten Spiele und ihr Gewicht in der Rangliste.",vs:"gegen",W:"S",D_:"U",L:"N",win:"Sieg",draw:"Unentschieden",loss:"Niederlage",athome:"Heim",away:"Auswärts",hbadge:"H",abadge:"A",fund:"Gegründet",est:"Stadion",ciu:"Stadt",capac:"Kapazität",kitLocal:"Heim",kitVisitant:"Auswärts",kitTercera:"Ausweich"},
   it:{evol:"Evoluzione del rating",cap:"Rating dalla stagione 2016 a oggi.",
       world:"Classifica mondiale",nat:"Nel suo paese",rating:"Rating attuale",trend:"Tendenza (1 anno)",
       best:"Miglior rating",bestyr:"Anno di picco",worst:"Rating più basso",div:"Divisione attuale",
-      seasons:"Stagioni nel modello",loading:"Caricamento…",notfound:"Club non trovato.",formtitle:"Perché si è mosso",formcap:"Le ultime partite e quanto ha pesato ciascuna in classifica.",vs:"contro",W:"V",D_:"P",L:"S",win:"Vittoria",draw:"Pareggio",loss:"Sconfitta",athome:"In casa",away:"In trasferta",hbadge:"C",abadge:"T",fund:"Fondato nel",est:"Stadio",ciu:"Città",cap:"Capienza",kitLocal:"Casa",kitVisitant:"Trasferta",kitTercera:"Terza"},
+      seasons:"Stagioni nel modello",loading:"Caricamento…",notfound:"Club non trovato.",formtitle:"Perché si è mosso",formcap:"Le ultime partite e quanto ha pesato ciascuna in classifica.",vs:"contro",W:"V",D_:"P",L:"S",win:"Vittoria",draw:"Pareggio",loss:"Sconfitta",athome:"In casa",away:"In trasferta",hbadge:"C",abadge:"T",fund:"Fondato nel",est:"Stadio",ciu:"Città",capac:"Capienza",kitLocal:"Casa",kitVisitant:"Trasferta",kitTercera:"Terza"},
   pt:{evol:"Evolução do rating",cap:"Rating desde a época 2016 até hoje.",
       world:"Ranking mundial",nat:"No seu país",rating:"Rating atual",trend:"Tendência (1 ano)",
       best:"Melhor rating",bestyr:"Ano de pico",worst:"Rating mais baixo",div:"Divisão atual",
-      seasons:"Épocas no modelo",loading:"A carregar…",notfound:"Clube não encontrado.",formtitle:"Porque se moveu",formcap:"Os últimos jogos e quanto pesou cada um no ranking.",vs:"contra",W:"V",D_:"E",L:"D",win:"Vitória",draw:"Empate",loss:"Derrota",athome:"Em casa",away:"Fora",hbadge:"C",abadge:"F",fund:"Fundado em",est:"Estádio",ciu:"Cidade",cap:"Lotação",kitLocal:"Casa",kitVisitant:"Fora",kitTercera:"Terceiro"},
+      seasons:"Épocas no modelo",loading:"A carregar…",notfound:"Clube não encontrado.",formtitle:"Porque se moveu",formcap:"Os últimos jogos e quanto pesou cada um no ranking.",vs:"contra",W:"V",D_:"E",L:"D",win:"Vitória",draw:"Empate",loss:"Derrota",athome:"Em casa",away:"Fora",hbadge:"C",abadge:"F",fund:"Fundado em",est:"Estádio",ciu:"Cidade",capac:"Lotação",kitLocal:"Casa",kitVisitant:"Fora",kitTercera:"Terceiro"},
 };
 
 let CLUB=null, TEMPORADES=[], NOMS={}, META=null;
@@ -265,6 +295,7 @@ fetch('dades.json').then(r=>r.json()).then(j=>{
   CLUB=(j.clubs||[]).find(c=>String(c.id)===String(clubId));
   if(!CLUB){ empty.style.display='block'; empty.textContent=(CT[lang]||CT.ca).notfound; return; }
   draw();
+  carregaProperes();   // a part, i després: la fitxa no l'espera
 }).catch(err=>{ empty.style.display='block'; empty.textContent="Error: "+err; });
 
 function draw(){
@@ -312,6 +343,7 @@ function draw(){
 
   // forma recent (últims partits amb rival clicable + moviment)
   drawForm(c, t);
+  drawNext();          // no fa res si el properes.json encara no ha arribat
 
   // fets
   const hist=(c.hist||[]).map((v,i)=>({v,yr:anysCorba[i]})).filter(x=>x.v!=null);
@@ -326,7 +358,7 @@ function draw(){
   if(c.fund) ident+=`<div><div class="l">${t.fund}</div><div class="v">${c.fund}</div></div>`;
   if(c.est)  ident+=`<div><div class="l">${t.est}</div><div class="v sm">${esc(c.est)}</div></div>`;
   if(c.ciu)  ident+=`<div><div class="l">${t.ciu}</div><div class="v sm">${esc(c.ciu)}</div></div>`;
-  if(c.cap)  ident+=`<div><div class="l">${t.cap}</div><div class="v">${c.cap.toLocaleString('ca')}</div></div>`;
+  if(c.cap)  ident+=`<div><div class="l">${t.capac}</div><div class="v">${c.cap.toLocaleString('ca')}</div></div>`;
   const samarreta = kitsHTML(c, META, t);
   document.getElementById('identity').innerHTML =
     (samarreta ? `<div class="kit">${samarreta}</div>` : '') +
@@ -378,6 +410,105 @@ function drawForm(c, t){
   };
 }
 function resName(r,t){return r==='V'?t.win:r==='E'?t.draw:t.loss}
+
+/* ---- PRÒXIMS PARTITS ---------------------------------------------
+   Viuen al properes.json, a part del dades.json, perquè es refresquen
+   cada dia i el gruix del rànquing no. El demanem DESPRÉS de pintar la
+   fitxa: si el fitxer no hi és, o encara no ha arribat, la pàgina ja
+   està sencera i aquesta targeta simplement no surt.
+
+   El JSON ve agrupat per país i competició (és com el llegeix la pàgina
+   de pròximes jornades). Aquí ens cal el contrari: els partits d'UN
+   club, vinguin d'on vinguin. Per això el recorrem sencer un cop.
+------------------------------------------------------------------- */
+const PT={
+  ca:{titol:"Pròxims partits",cap:"Probabilitat segons el model, des del punt de vista d'aquest club.",
+      tot:"Veure totes les pròximes jornades →"},
+  es:{titol:"Próximos partidos",cap:"Probabilidad según el modelo, desde el punto de vista de este club.",
+      tot:"Ver todas las próximas jornadas →"},
+  en:{titol:"Upcoming fixtures",cap:"Model probability, from this club's point of view.",
+      tot:"See all upcoming fixtures →"},
+  fr:{titol:"Prochains matchs",cap:"Probabilité du modèle, du point de vue de ce club.",
+      tot:"Voir toutes les prochaines journées →"},
+  de:{titol:"Nächste Spiele",cap:"Wahrscheinlichkeit nach dem Modell, aus Sicht dieses Klubs.",
+      tot:"Alle nächsten Spieltage ansehen →"},
+  it:{titol:"Prossime partite",cap:"Probabilità secondo il modello, dal punto di vista di questo club.",
+      tot:"Vedi tutte le prossime giornate →"},
+  pt:{titol:"Próximos jogos",cap:"Probabilidade segundo o modelo, do ponto de vista deste clube.",
+      tot:"Ver todas as próximas jornadas →"},
+};
+
+let PROPERES=null;
+
+function carregaProperes(){
+  fetch('properes.json')
+    .then(r=>r.ok?r.json():null)
+    .then(j=>{ if(j){ PROPERES=j; drawNext(); } })
+    .catch(()=>{});          // sense pròxims partits la fitxa ja és completa
+}
+
+// tots els partits d'aquest club, ordenats per data
+function partitsDel(id){
+  const fora=[];
+  for(const p of (PROPERES.paisos||[])){
+    for(const c of (p.comps||[])){
+      for(const m of (c.m||[])){
+        if(String(m[1])!==String(id) && String(m[4])!==String(id)) continue;
+        const casa=String(m[1])===String(id);
+        fora.push({
+          data:m[0], comp:c.n, jor:c.jor||'', casa:casa,
+          rival:casa?m[5]:m[2], rivalId:casa?m[4]:m[1],
+          rivalRt:casa?m[6]:m[3],
+          // El JSON dona la probabilitat en clau de local. Si el nostre
+          // club juga fora, guanyar és el tercer número, no el primer.
+          g:casa?m[7]:m[9], e:m[8], pd:casa?m[9]:m[7],
+        });
+      }
+    }
+  }
+  fora.sort((a,b)=>a.data<b.data?-1:a.data>b.data?1:0);
+  return fora;
+}
+
+function drawNext(){
+  const card=document.getElementById('prox-card');
+  if(!PROPERES||!CLUB){ card.style.display='none'; return; }
+  const t=CT[lang]||CT.ca, p=PT[lang]||PT.ca;
+  const seus=partitsDel(CLUB.id).slice(0,3);
+  if(!seus.length){ card.style.display='none'; return; }
+
+  document.getElementById('prox-title').textContent=p.titol;
+  document.getElementById('prox-cap').textContent=p.cap;
+  const a=document.getElementById('prox-tot-a');
+  a.textContent=p.tot;
+  a.href='properes.html?lang='+lang;
+
+  document.getElementById('prox-list').innerHTML=seus.map(f=>{
+    const d=new Date(f.data);
+    const dia=isNaN(d)?f.data.slice(0,10)
+      :d.toLocaleDateString(lang,{weekday:'short',day:'numeric',month:'short'});
+    const hora=isNaN(d)?''
+      :d.toLocaleTimeString(lang,{hour:'2-digit',minute:'2-digit'});
+    const venue=`<span class="venue ${f.casa?'home':'away'}" title="${
+      f.casa?t.athome:t.away}">${f.casa?t.hbadge:t.abadge}</span>`;
+    return `<div class="form-row">
+      <span class="prox-quan"><b>${dia}</b> ${hora}
+        <span class="prox-comp" title="${esc(f.comp)}${f.jor?' · '+esc(f.jor):''}">${esc(f.comp)}</span></span>
+      <span class="form-opp"><span class="vs">${t.vs}</span>
+        <a data-club="${f.rivalId}">${esc(f.rival)}</a>${venue}</span>
+      <span>
+        <span class="pbar"><i class="w" style="width:${f.g}%"></i><i class="d" style="width:${f.e}%"></i><i class="l" style="width:${f.pd}%"></i></span>
+        <span class="pxif"><span title="${t.win}">${f.g}%</span><span title="${t.draw}">${f.e}%</span><span title="${t.loss}">${f.pd}%</span></span>
+      </span>
+    </div>`;
+  }).join('');
+
+  card.style.display='block';
+  document.getElementById('prox-list').onclick=e=>{
+    const el=e.target.closest('a[data-club]'); if(!el) return;
+    location.href='club.html?id='+encodeURIComponent(el.dataset.club)+'&lang='+lang;
+  };
+}
 
 // Els noms d'estadi i ciutat venen de l'API i van a parar a innerHTML.
 // Cap n'hauria de portar, però un apòstrof o un "&" mal escapat trencaria

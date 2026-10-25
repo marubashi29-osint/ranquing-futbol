@@ -55,6 +55,17 @@
     background:#fff;color:var(--ink-soft);border-radius:2px;cursor:pointer;transition:.15s}
   .chip:hover{border-color:var(--gold)}
   .chip.on{background:var(--pitch);color:#fff;border-color:var(--pitch)}
+  /* Selector de temporada. Mateixa alcada i tipografia que els xips
+     perque no trenqui la linia de controls. */
+  .temp{font-family:"Helvetica Neue",Arial,sans-serif;font-size:12px;font-weight:600;
+    padding:7px 10px;border:1px solid #d8d5cc;border-radius:999px;background:#fff;
+    color:var(--ink);cursor:pointer}
+  .temp:hover{border-color:var(--gold)}
+  .temp.on{background:var(--pitch);color:#fff;border-color:var(--pitch)}
+  /* Avis quan es mira una temporada passada: el lector ha de saber que
+     el que veu no es el ranquing d'avui. */
+  .historic{margin:0 0 14px;padding:10px 14px;border-left:3px solid var(--gold);
+    background:rgba(200,162,74,.10);font-size:13px;color:#4a5260;border-radius:0 4px 4px 0}
 
   main{padding:8px 0 60px}
   table{width:100%;border-collapse:collapse}
@@ -146,11 +157,13 @@
       <button class="chip" data-c="AFC" data-t="f_afc"></button>
       <button class="chip" data-c="CAF" data-t="f_caf"></button>
     </div>
+    <select class="temp" id="temp"></select>
   </div>
 </div>
 
 <main>
   <div class="wrap">
+    <div class="historic" id="historic" style="display:none"></div>
     <table>
       <thead><tr>
         <th style="text-align:center">#</th>
@@ -182,6 +195,7 @@ const T = {
     m_matches:"Partits analitzats",m_countries:"Països",m_seasons:"Temporades",m_corr:"Correlació UEFA*",
     search:"Cerca un club…",f_all:"Tot el món",f_uefa:"Europa",f_conmebol:"Sud-amèrica",
     f_concacaf:"Nord-amèrica",f_afc:"Àsia",f_caf:"Àfrica",
+    temp_now:"Temporada actual",temp_note:"Rànquing de la temporada %s. El rating és el que el club tenia aleshores; la posició s'ha recalculat només amb els clubs que van jugar aquell any.",
     th_club:"Club",th_country:"País",th_conf:"Conf.",th_rating:"Rating",
     empty:"Cap club coincideix amb la cerca.",
     conf_hi:"Confiança alta — el club juga competició continental amb regularitat",
@@ -195,6 +209,7 @@ const T = {
     m_matches:"Partidos analizados",m_countries:"Países",m_seasons:"Temporadas",m_corr:"Correlación UEFA*",
     search:"Busca un club…",f_all:"Todo el mundo",f_uefa:"Europa",f_conmebol:"Sudamérica",
     f_concacaf:"Norteamérica",f_afc:"Asia",f_caf:"África",
+    temp_now:"Temporada actual",temp_note:"Ranking de la temporada %s. El rating es el que el club tenía entonces; la posición se ha recalculado solo con los clubes que jugaron ese año.",
     th_club:"Club",th_country:"País",th_conf:"Conf.",th_rating:"Rating",
     empty:"Ningún club coincide con la búsqueda.",
     conf_hi:"Confianza alta — el club juega competición continental con regularidad",
@@ -208,6 +223,7 @@ const T = {
     m_matches:"Matches analysed",m_countries:"Countries",m_seasons:"Seasons",m_corr:"UEFA correlation*",
     search:"Search a club…",f_all:"Whole world",f_uefa:"Europe",f_conmebol:"South America",
     f_concacaf:"North America",f_afc:"Asia",f_caf:"Africa",
+    temp_now:"Current season",temp_note:"Ranking for the %s season. The rating is the one the club held at the time; the position is recalculated using only the clubs that played that year.",
     th_club:"Club",th_country:"Country",th_conf:"Conf.",th_rating:"Rating",
     empty:"No club matches your search.",
     conf_hi:"High confidence — the club plays continental competition regularly",
@@ -221,6 +237,7 @@ const T = {
     m_matches:"Matchs analysés",m_countries:"Pays",m_seasons:"Saisons",m_corr:"Corrélation UEFA*",
     search:"Chercher un club…",f_all:"Monde entier",f_uefa:"Europe",f_conmebol:"Amérique du Sud",
     f_concacaf:"Amérique du Nord",f_afc:"Asie",f_caf:"Afrique",
+    temp_now:"Saison actuelle",temp_note:"Classement de la saison %s. La note est celle que le club avait alors ; la position est recalculée avec les seuls clubs ayant joué cette année-là.",
     th_club:"Club",th_country:"Pays",th_conf:"Conf.",th_rating:"Rating",
     empty:"Aucun club ne correspond à la recherche.",
     conf_hi:"Confiance élevée — le club joue régulièrement en coupe continentale",
@@ -234,6 +251,7 @@ const T = {
     m_matches:"Analysierte Spiele",m_countries:"Länder",m_seasons:"Saisons",m_corr:"UEFA-Korrelation*",
     search:"Klub suchen…",f_all:"Ganze Welt",f_uefa:"Europa",f_conmebol:"Südamerika",
     f_concacaf:"Nordamerika",f_afc:"Asien",f_caf:"Afrika",
+    temp_now:"Aktuelle Saison",temp_note:"Rangliste der Saison %s. Die Bewertung ist die damalige; die Platzierung wurde nur mit den Vereinen berechnet, die in jenem Jahr gespielt haben.",
     th_club:"Klub",th_country:"Land",th_conf:"Konf.",th_rating:"Rating",
     empty:"Kein Klub entspricht der Suche.",
     conf_hi:"Hohe Zuverlässigkeit — der Klub spielt regelmäßig international",
@@ -247,6 +265,7 @@ const T = {
     m_matches:"Partite analizzate",m_countries:"Paesi",m_seasons:"Stagioni",m_corr:"Correlazione UEFA*",
     search:"Cerca un club…",f_all:"Tutto il mondo",f_uefa:"Europa",f_conmebol:"Sud America",
     f_concacaf:"Nord America",f_afc:"Asia",f_caf:"Africa",
+    temp_now:"Stagione attuale",temp_note:"Classifica della stagione %s. Il rating è quello che il club aveva allora; la posizione è ricalcolata solo con i club che hanno giocato quell'anno.",
     th_club:"Club",th_country:"Paese",th_conf:"Conf.",th_rating:"Rating",
     empty:"Nessun club corrisponde alla ricerca.",
     conf_hi:"Affidabilità alta — il club gioca regolarmente le coppe continentali",
@@ -260,6 +279,7 @@ const T = {
     m_matches:"Jogos analisados",m_countries:"Países",m_seasons:"Épocas",m_corr:"Correlação UEFA*",
     search:"Procurar um clube…",f_all:"Todo o mundo",f_uefa:"Europa",f_conmebol:"América do Sul",
     f_concacaf:"América do Norte",f_afc:"Ásia",f_caf:"África",
+    temp_now:"Época atual",temp_note:"Classificação da época %s. O rating é o que o clube tinha então; a posição foi recalculada apenas com os clubes que jogaram nesse ano.",
     th_club:"Clube",th_country:"País",th_conf:"Conf.",th_rating:"Rating",
     empty:"Nenhum clube corresponde à procura.",
     conf_hi:"Confiança alta — o clube joga competição continental regularmente",
@@ -284,6 +304,9 @@ const COUNTRY = {
 // Els noms i banderes de països vénen de paisos.js (font única, 87 països × 7 idiomes).
 
 let DATA=[], lang='ca', filterConf='all';
+// Temporades disponibles i quina s'esta mirant. Cadena buida = la
+// temporada actual, que es el ranquing de sempre.
+let TEMPS=[], tempSel=new URLSearchParams(location.search).get('temp')||'';
 const rows=document.getElementById('rows'), empty=document.getElementById('empty'), q=document.getElementById('q');
 
 // Carrega les dades reals del motor.
@@ -293,6 +316,9 @@ fetch('dades.json')
     DATA=j.clubs.map(c=>({
       id:c.id, r:c.world, club:c.club, country:c.country, conf:c.conf,
       rating:c.rating,
+      // rating de cada temporada; ve del motor i ja hi era, nomes no el
+      // fèiem servir en aquesta pagina
+      hist: c.hist||[],
       // confiança calculada al motor a partir dels ponts reals (partits
       // continentals del club) + divisió + connexió del seu país
       cf: c.fiab || 'mid', ponts: c.ponts||0,
@@ -301,6 +327,12 @@ fetch('dades.json')
     if(j.meta){
       const el=document.querySelector('.meta .n'); // primer = partits
       if(el) el.textContent=j.meta.partits.toLocaleString('ca');
+      TEMPS=j.meta.temporades||[];
+      // el comptador de temporades estava escrit a ma i es quedava curt
+      // cada any; ara surt de les dades
+      const et=document.querySelectorAll('.meta .n')[2];
+      if(et&&TEMPS.length) et.textContent=TEMPS.length;
+      omplirTemporades();
     }
     applyLang();
   })
@@ -309,27 +341,61 @@ fetch('dades.json')
     empty.textContent='No s\'han pogut carregar les dades (dades.json). '+err;
   });
 
+function omplirTemporades(){
+  const sel=document.getElementById('temp'), t=T[lang];
+  if(!sel) return;
+  sel.innerHTML='<option value="">'+t.temp_now+'</option>'
+    +TEMPS.slice().reverse().map(y=>'<option value="'+y+'">'+y+'</option>').join('');
+  if(TEMPS.indexOf(+tempSel)<0) tempSel='';
+  sel.value=tempSel;
+  sel.classList.toggle('on', !!tempSel);
+}
+
+// La llista que s'ha de pintar, amb la seva posicio.
+// Amb la temporada actual es el ranquing tal com ve del motor. Amb una
+// de passada, agafem el rating d'aquell any, descartem els clubs que no
+// hi van jugar i tornem a numerar: si no, les posicions tindrien forats.
+function llistaBase(){
+  if(!tempSel) return DATA.map(d=>Object.assign({},d,{pos:d.r,val:d.rating}));
+  const i=TEMPS.indexOf(+tempSel);
+  if(i<0) return [];
+  const amb=DATA.filter(d=>d.hist&&d.hist[i]!=null)
+                .map(d=>Object.assign({},d,{val:d.hist[i]}))
+                .sort((a,b)=>b.val-a.val);
+  amb.forEach((d,k)=>{d.pos=k+1});
+  return amb;
+}
+
 function applyLang(){
   const t=T[lang];
   document.querySelectorAll('[data-t]').forEach(el=>{el.innerHTML=t[el.dataset.t]});
   document.querySelectorAll('[data-t-ph]').forEach(el=>{el.placeholder=t[el.dataset.tPh]});
   document.documentElement.lang=lang;
+  omplirTemporades();
   render();
 }
 function render(){
   const term=q.value.trim().toLowerCase();
-  const list=DATA.filter(d=>{
+  const base=llistaBase();
+  const list=base.filter(d=>{
     const okC=filterConf==='all'||d.conf===filterConf;
     const okQ=!term||d.club.toLowerCase().includes(term)||countryName(d.country).toLowerCase().includes(term);
     return okC&&okQ;
   });
+  const avis=document.getElementById('historic');
+  if(avis){
+    if(tempSel){
+      avis.textContent=T[lang].temp_note.replace('%s', tempSel);
+      avis.style.display='block';
+    }else{ avis.style.display='none'; }
+  }
   rows.innerHTML=list.map(d=>`
-    <tr data-rank="${d.r}">
-      <td class="rank">${d.r}</td>
+    <tr data-rank="${d.pos}">
+      <td class="rank">${d.pos}</td>
       <td class="club"><span class="club-cell"><span class="crest club-link" data-club="${d.id}" title="${d.club}">${isoPais(d.country)}</span><a class="club-link" data-club="${d.id}">${d.club}</a></span></td>
       <td class="country"><a class="country-link" data-country="${d.country}" title="${countryName(d.country)}">${countryName(d.country)}</a></td>
       <td class="conf"><span class="dot ${d.cf}"></span></td>
-      <td class="rating">${d.rating.toLocaleString(lang)}</td>
+      <td class="rating">${d.val.toLocaleString(lang)}</td>
     </tr>`).join('');
   empty.style.display=list.length?'none':'block';
 }
@@ -353,6 +419,16 @@ document.getElementById('rows').addEventListener('click',e=>{
   const a=e.target.closest('.country-link');if(!a)return;
   const key=a.dataset.country;
   window.location.href='pais.html?c='+encodeURIComponent(key)+'&lang='+lang;
+});
+document.getElementById('temp').addEventListener('change',e=>{
+  tempSel=e.target.value;
+  e.target.classList.toggle('on', !!tempSel);
+  // deixem la temporada a l'adreca, com ?lang= i ?id=: aixi es pot
+  // enllacar el ranquing d'un any concret
+  const u=new URL(location.href);
+  if(tempSel) u.searchParams.set('temp',tempSel); else u.searchParams.delete('temp');
+  history.replaceState(null,'',u);
+  render();
 });
 q.addEventListener('input',render);
 applyLang();
